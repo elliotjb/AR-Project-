@@ -5,9 +5,10 @@ TagManager:
   serializedVersion: 2
   tags:
   - Mirror
-  - Reciver
   - Obstacle
   - ColorBlue
+  - Receiver
+  - ColorRed
   layers:
   - Default
   - TransparentFX

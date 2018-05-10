@@ -2,42 +2,41 @@
 using System.Collections.Generic;
 using UnityEngine;
 
+public enum ElementType
+{
+    NONE = -1,
+    MIRROR,
+    RECEIVER,
+    OBSTACLE,
+    //Encapsulate colors between FIRST_COLOR & LAST_COLOR
+    FIRST_COLOR, 
+    COLOR_CHANGER_BLUE,
+    COLOR_CHANGER_RED,
+    LAST_COLOR
+    // --------------------------------------------------
+}
+            
 public class LaserClass
 {
 	public LineRenderer laser;
 	public bool active = false;
 }
 
-public class Laserv3 : MonoBehaviour {
-
-
+public class Laserv3 : MonoBehaviour
+{
 	public LineRenderer laser_temp;
 	public int max_lines = 10;
 	public int max_distance = 100;
 
-	//int layer_mirror = 1<<8;
-	//int layer_obstacle = 1<<9;
-	//int layer_reciver = 1<<10;
-	//int layer_colorblue = 1<<11;
-
-
 	List<LaserClass> lasers;
 
+    //MATERIALS TO APPLY COLOR
     public Material red;
     public Material blue;
 
-    //public LaserClass this[int index]
-    //{
-    //    get
-    //    {
-    //        if (index >= 0 && index < lasers.Count)
-    //            return lasers[index];
-    //        return null;
-    //    }
-    //}
 
-    // Use this for initialization
-    void Start () {
+    void Start ()
+    {
 		lasers = new List<LaserClass> (10);
 
 		for (int i = 0; i < 10; i++) 
@@ -59,14 +58,11 @@ public class Laserv3 : MonoBehaviour {
 
 	void DoLaser()
 	{
-
 		Vector3 lastLaserPosition = transform.position;
 		Vector3 direction = transform.up;
 
         lasers[0].laser.positionCount = 1;
-		lasers [0].laser.SetPosition(0, transform.position);
-
-
+		lasers[0].laser.SetPosition(0, transform.position);
 
 		for (int i = 0; i < lasers.Count; i++) 
 		{
@@ -74,7 +70,8 @@ public class Laserv3 : MonoBehaviour {
             int div_hits = 1;
 
             bool hit = true;
-			if (lasers [i].active == false) {
+			if (lasers[i].active == false)
+            {
 				continue;
 			}
 
@@ -82,62 +79,39 @@ public class Laserv3 : MonoBehaviour {
 			{
 				RaycastHit ray_hit;
 				bool hit_do = Physics.Raycast(lastLaserPosition, direction, out ray_hit, max_distance);
-				int mode = SelectMode (ray_hit);
-				if (mode == 1) {
-					count_hits++;
-					div_hits += 3;
-					lasers [i].laser.positionCount = div_hits;
-					lasers [i].laser.SetPosition (div_hits - 3, Vector3.MoveTowards (ray_hit.point, lastLaserPosition, 0.01f));
-					lasers [i].laser.SetPosition (div_hits - 2, ray_hit.point);
-					lasers [i].laser.SetPosition (div_hits - 1, ray_hit.point);
-					lastLaserPosition = ray_hit.point;
-					direction = Vector3.Reflect (direction, ray_hit.normal);
+                ElementType mode = SelectMode (ray_hit);
+
+                //MODIFY LASER DEPENDING ON THE COLLIDED OBJECT ----------------------------------------------------
+
+				if (mode == ElementType.MIRROR)
+                {
+                    Mirror(ref count_hits, ref div_hits, ref ray_hit, ref lastLaserPosition, ref direction, i);             
+                } 
+
+				else if (mode == ElementType.RECEIVER)
+                {
+                    Receiver(ref count_hits, ref div_hits, ray_hit.point, lastLaserPosition, direction, ref hit, i);
 				} 
-				else if (mode == 2) {
-					div_hits++;
-					count_hits++;
-					lasers [i].laser.positionCount = div_hits;
-					float distance = Vector3.Distance (lastLaserPosition, ray_hit.point);
-					lasers [i].laser.SetPosition (div_hits - 1, lastLaserPosition + (direction.normalized * distance));
 
-                    // Do Something....
-
-
-                    hit = false;
-				} 
-				else if(mode == 3){
-					div_hits++;
-					count_hits++;
-					lasers [i].laser.positionCount = div_hits;
-
-                    float distance = Vector3.Distance (lastLaserPosition, ray_hit.point);
-					lasers [i].laser.SetPosition (div_hits - 1, lastLaserPosition + (direction.normalized * distance));
-					hit = false;
+				else if(mode == ElementType.OBSTACLE)
+                {
+                    Obstacle(ref count_hits, ref div_hits, ray_hit.point, lastLaserPosition, direction, ref hit, i);
 				}
-				else if(mode == 4){
-					div_hits++;
-					count_hits++;
-					lasers [i].laser.positionCount = div_hits;
-					float distance = Vector3.Distance (lastLaserPosition, ray_hit.point);
-					lasers [i].laser.SetPosition (div_hits - 1, lastLaserPosition + (direction.normalized * distance));
 
-                    // Do Something....
-
-                    lasers[i + 1].laser.material = blue;
-                    lasers [i + 1].active = true;
-					lasers [i + 1].laser.positionCount = 1;
-					lastLaserPosition = ray_hit.point + (direction.normalized * 0.4261f);
-                    lasers [i + 1].laser.SetPosition(0, lastLaserPosition);
-
-
-					hit = false;
+				else if(mode > ElementType.FIRST_COLOR && mode < ElementType.LAST_COLOR)
+                {
+                    ChangeColor(ref count_hits, ref div_hits, ray_hit.point, ref lastLaserPosition, direction, ref hit, mode, i);
 				}
-				else
+
+                // --------------------------------------------------------------------------------------------------------------
+
+                //END OF LASER, LAST LINE
+                else
 				{
 					div_hits++;
 					count_hits++;
-					lasers [i].laser.positionCount = div_hits;
-					lasers [i].laser.SetPosition (div_hits - 1, lastLaserPosition + (direction.normalized * max_distance));
+					lasers[i].laser.positionCount = div_hits;
+					lasers[i].laser.SetPosition (div_hits - 1, lastLaserPosition + (direction.normalized * max_distance));
 					hit = false;
 				}
 
@@ -149,50 +123,32 @@ public class Laserv3 : MonoBehaviour {
 		}
 	}
 
-
-	int SelectMode(bool hit_do, bool hit_reciver, bool hit_obstacle, bool hit_colorblue)
-	{
-		if (hit_do) 
-		{
-			return 1;
-		} 
-		else if (hit_reciver)
-		{
-			return 2;
-		}
-		else if (hit_obstacle)
-		{
-			return 3;
-		}
-		else if (hit_colorblue)
-		{
-			return 4;
-		}
-		return 0;
-	}
-
-    int SelectMode(RaycastHit hit)
+    ElementType SelectMode(RaycastHit hit)
     {
         if (hit.transform != null)
         {
             if (hit.transform.tag.Equals("Mirror"))
             {
-                return 1;
+                return ElementType.MIRROR;
             }
-            else if (hit.transform.tag.Equals("Reciver"))
+            else if (hit.transform.tag.Equals("Receiver"))
             {
-                return 2;
+                return ElementType.RECEIVER;
             }
             else if (hit.transform.tag.Equals("Obstacle"))
             {
-                return 3;
+                return ElementType.OBSTACLE;
             }
             else if (hit.transform.tag.Equals("ColorBlue"))
             {
-                return 4;
+                return ElementType.COLOR_CHANGER_BLUE;
+            }
+            else if (hit.transform.tag.Equals("ColorRed"))
+            {
+                return ElementType.COLOR_CHANGER_RED;
             }
         }
-        return 0;
+        return ElementType.NONE;
     }
 
     void ResetValues()
@@ -205,5 +161,85 @@ public class Laserv3 : MonoBehaviour {
         }
         lasers[0].active = true;
     }
+
+
+    //LASER MODIFIER FUNCTIONS -----------------
+
+    //Reflect laser depending on the mirror rotation
+    void Mirror(ref int count_hits, ref int div_hits, ref RaycastHit ray_hit, ref Vector3 lastLaserPosition, ref Vector3 direction, int i)
+    {
+        count_hits++;
+        div_hits += 3;
+        lasers[i].laser.positionCount = div_hits;
+        lasers[i].laser.SetPosition(div_hits - 3, Vector3.MoveTowards(ray_hit.point, lastLaserPosition, 0.01f));
+        lasers[i].laser.SetPosition(div_hits - 2, ray_hit.point);
+        lasers[i].laser.SetPosition(div_hits - 1, ray_hit.point);
+        lastLaserPosition = ray_hit.point;
+        direction = Vector3.Reflect(direction, ray_hit.normal);
+    }
+
+    //Receive laser to Do Something...
+    void Receiver(ref int count_hits, ref int div_hits, Vector3 ray_hit_point, Vector3 lastLaserPosition, Vector3 direction, ref bool hit, int i)
+    {
+        count_hits++;
+        div_hits++;
+        lasers[i].laser.positionCount = div_hits;
+        float distance = Vector3.Distance(lastLaserPosition, ray_hit_point);
+        lasers[i].laser.SetPosition(div_hits - 1, lastLaserPosition + (direction.normalized * distance));
+
+        // Do Something...
+
+
+        hit = false;
+    }
+
+    //Stop the laser line at the hit point
+    void Obstacle(ref int count_hits, ref int div_hits, Vector3 ray_hit_point, Vector3 lastLaserPosition, Vector3 direction, ref bool hit, int i)
+    {
+        count_hits++;
+        div_hits++;
+        lasers[i].laser.positionCount = div_hits;
+        float distance = Vector3.Distance(lastLaserPosition, ray_hit_point);
+        lasers[i].laser.SetPosition(div_hits - 1, lastLaserPosition + (direction.normalized * distance));
+        hit = false;
+    }
+
+    //Change color of the laser: BLUE
+    void ChangeColor(ref int count_hits, ref int div_hits, Vector3 ray_hit_point, ref Vector3 lastLaserPosition, Vector3 direction, ref bool hit, ElementType mode, int i)
+    {
+        count_hits++;
+        div_hits++;
+        lasers[i].laser.positionCount = div_hits;
+        float distance = Vector3.Distance(lastLaserPosition, ray_hit_point);
+        lasers[i].laser.SetPosition(div_hits - 1, lastLaserPosition + (direction.normalized * distance));
+
+        // Do Something...
+
+        //Set the laser color
+        SetColor(mode, i);
+
+        lasers[i + 1].active = true;
+        lasers[i + 1].laser.positionCount = 1;
+        lastLaserPosition = ray_hit_point + (direction.normalized * 0.4261f);
+        lasers[i + 1].laser.SetPosition(0, lastLaserPosition);
+
+
+        hit = false;
+    }
+
+    //Set the color of the laser depending on its previously compared tag
+    void SetColor(ElementType mode, int i)
+    {
+        if (mode == ElementType.COLOR_CHANGER_BLUE) 
+        {
+            lasers[i + 1].laser.material = blue;
+        }
+        else if (mode == ElementType.COLOR_CHANGER_RED)
+        {
+            lasers[i + 1].laser.material = red;
+        }
+    }
+
+    // -----------------------------------------
 
 }
