@@ -9,6 +9,7 @@ TagManager:
   - ColorBlue
   - Receiver
   - ColorRed
+  - Portal
   layers:
   - Default
   - TransparentFX

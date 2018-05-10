@@ -8,12 +8,15 @@ public enum ElementType
     MIRROR,
     RECEIVER,
     OBSTACLE,
+
     //Encapsulate colors between FIRST_COLOR & LAST_COLOR
     FIRST_COLOR, 
     COLOR_CHANGER_BLUE,
     COLOR_CHANGER_RED,
-    LAST_COLOR
+    LAST_COLOR,
     // --------------------------------------------------
+
+    PORTAL
 }
             
 public class LaserClass
@@ -103,14 +106,19 @@ public class Laserv3 : MonoBehaviour
                     ChangeColor(ref count_hits, ref div_hits, ray_hit.point, ref lastLaserPosition, direction, ref hit, mode, i);
 				}
 
+                else if (mode == ElementType.PORTAL)
+                {
+                    Portal(ref count_hits, ref div_hits, ray_hit, ref lastLaserPosition, ref direction, ref hit, i);
+                }
+
                 // --------------------------------------------------------------------------------------------------------------
 
                 //END OF LASER, LAST LINE
                 else
 				{
-					div_hits++;
-					count_hits++;
-					lasers[i].laser.positionCount = div_hits;
+                    count_hits++;
+                    div_hits++;
+                    lasers[i].laser.positionCount = div_hits;
 					lasers[i].laser.SetPosition (div_hits - 1, lastLaserPosition + (direction.normalized * max_distance));
 					hit = false;
 				}
@@ -138,6 +146,10 @@ public class Laserv3 : MonoBehaviour
             else if (hit.transform.tag.Equals("Obstacle"))
             {
                 return ElementType.OBSTACLE;
+            }
+            else if (hit.transform.tag.Equals("Portal"))
+            {
+                return ElementType.PORTAL;
             }
             else if (hit.transform.tag.Equals("ColorBlue"))
             {
@@ -220,7 +232,7 @@ public class Laserv3 : MonoBehaviour
 
         lasers[i + 1].active = true;
         lasers[i + 1].laser.positionCount = 1;
-        lastLaserPosition = ray_hit_point + (direction.normalized * 0.4261f);
+        lastLaserPosition = ray_hit_point + (direction.normalized * 0.4261f); //0.4261 = Element width
         lasers[i + 1].laser.SetPosition(0, lastLaserPosition);
 
 
@@ -238,6 +250,30 @@ public class Laserv3 : MonoBehaviour
         {
             lasers[i + 1].laser.material = red;
         }
+    }
+
+    //Set the laser at the point of the linked portal
+    void Portal(ref int count_hits, ref int div_hits, RaycastHit ray_hit, ref Vector3 lastLaserPosition, ref Vector3 direction, ref bool hit, int i)
+    {
+        Portal linked_portal = ray_hit.transform.GetComponent<Portal>();
+
+        count_hits++;
+        div_hits++;
+
+        lasers[i].laser.positionCount = div_hits;
+        float distance = Vector3.Distance(lastLaserPosition, ray_hit.point);
+        lasers[i].laser.SetPosition(div_hits - 1, lastLaserPosition + (direction.normalized * distance));
+
+        // Do Something...
+
+        lasers[i + 1].active = true;
+        lasers[i + 1].laser.positionCount = 1;
+        lastLaserPosition = linked_portal.GetLinkedPosition();
+        lasers[i + 1].laser.SetPosition(0, lastLaserPosition);
+
+        direction = linked_portal.GetLinkedDirection().normalized;
+
+        hit = false;
     }
 
     // -----------------------------------------
