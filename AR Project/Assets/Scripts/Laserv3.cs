@@ -31,6 +31,10 @@ public class Laserv3 : MonoBehaviour
 	public int max_lines = 10;
 	public int max_distance = 100;
 
+    //Test
+    public float angle = 0.0f;
+    public float delta_angle = 0.0f;
+
 	List<LaserClass> lasers;
 
     //MATERIALS TO APPLY COLOR
@@ -62,8 +66,8 @@ public class Laserv3 : MonoBehaviour
 	void DoLaser()
 	{
 		Vector3 lastLaserPosition = transform.position;
-		Vector3 direction = transform.up;
-
+		Vector3 direction = transform.forward;
+        Debug.Log("Laser Direction: " + direction);
         lasers[0].laser.positionCount = 1;
 		lasers[0].laser.SetPosition(0, transform.position);
 
@@ -255,7 +259,7 @@ public class Laserv3 : MonoBehaviour
     //Set the laser at the point of the linked portal
     void Portal(ref int count_hits, ref int div_hits, RaycastHit ray_hit, ref Vector3 lastLaserPosition, ref Vector3 direction, ref bool hit, int i)
     {
-        Portal linked_portal = ray_hit.transform.GetComponent<Portal>();
+        Portal portal = ray_hit.transform.GetComponent<Portal>();
 
         count_hits++;
         div_hits++;
@@ -264,14 +268,22 @@ public class Laserv3 : MonoBehaviour
         float distance = Vector3.Distance(lastLaserPosition, ray_hit.point);
         lasers[i].laser.SetPosition(div_hits - 1, lastLaserPosition + (direction.normalized * distance));
 
-        // Do Something...
+        //Extract the distance from center
+        Vector3 diff = ray_hit.point - ray_hit.transform.position;
 
         lasers[i + 1].active = true;
         lasers[i + 1].laser.positionCount = 1;
-        lastLaserPosition = linked_portal.GetLinkedPosition();
-        lasers[i + 1].laser.SetPosition(0, lastLaserPosition);
+        //delta_angle = Vector3.SignedAngle(portal.GetLinkedDirection(), diff, Vector3.up);
+        //diff = Quaternion.AngleAxis(delta_angle, Vector3.up) * portal.GetLinkedDirection();
+        lastLaserPosition = portal.GetLinkedPosition() + portal.GetLinkedDirection() + diff;
 
-        direction = linked_portal.GetLinkedDirection().normalized;
+        lasers[i + 1].laser.SetPosition(0, lastLaserPosition);
+        angle = Vector3.SignedAngle(direction, portal.transform.forward, Vector3.up);
+        direction = Quaternion.AngleAxis(-angle, portal.transform.up) * portal.GetLinkedDirection();
+
+        //Set the correct color
+        lasers[i + 1].laser.material = lasers[i].laser.material;
+        
 
         hit = false;
     }

@@ -4,7 +4,7 @@ using UnityEngine;
 
 public class Portal : MonoBehaviour
 {
-    public Portal linked_portal = null;
+    public GameObject linked_portal = null;
 
     public Vector3 pos;
     public Vector3 dir;
