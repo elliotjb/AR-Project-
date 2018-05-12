@@ -2,13 +2,23 @@
 using System.Collections.Generic;
 using UnityEngine;
 
+public enum ColorType
+{
+    WHITE = 0,
+    BLUE,
+    RED
+}
+
 public class Objective : MonoBehaviour
 {
     public Material color_red;
+    public Material color_blue;
     public Material color_white;
     float time = 0.0f;
     public float time_progresive = 1.0f;
     bool hit = false;
+    public ColorType actualColor = ColorType.WHITE;
+    public ColorType reset_color = ColorType.WHITE;
 
     public enum ObjectiveMode
     {
@@ -36,31 +46,54 @@ public class Objective : MonoBehaviour
                 time += Time.deltaTime;
                 if (time > time_progresive)
                 {
-                    gameObject.GetComponent<Renderer>().material = color_red;
+                    ChangeColor(actualColor);
                 }
             }
             else
             {
                 time = 0.0f;
-                gameObject.GetComponent<Renderer>().material = color_white;
+                ChangeColor(reset_color);
             }
         }
         else if (mode == ObjectiveMode.DIRECT)
         {
             if (hit)
             {
-                gameObject.GetComponent<Renderer>().material = color_red;
+                ChangeColor(actualColor);
             }
             else
             {
-                gameObject.GetComponent<Renderer>().material = color_white;
+                ChangeColor(reset_color);
             }
         }
         hit = false;
     }
 
-    public void HitLaser()
+    void ChangeColor(ColorType color)
     {
+        switch(color)
+        {
+            case ColorType.WHITE:
+                {
+                    gameObject.GetComponent<Renderer>().material = color_white;
+                    break;
+                }
+            case ColorType.RED:
+                {
+                    gameObject.GetComponent<Renderer>().material = color_red;
+                    break;
+                }
+            case ColorType.BLUE:
+                {
+                    gameObject.GetComponent<Renderer>().material = color_blue;
+                    break;
+                }
+        }
+    }
+
+    public void HitLaser(ColorType color)
+    {
+        actualColor = color;
         hit = true;
     }
 

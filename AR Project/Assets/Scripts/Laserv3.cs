@@ -32,7 +32,8 @@ public class LaserClass
 {
 	public LineRenderer laser;
 	public bool active = false;
-    public DirectionType direction = DirectionType.NORMAL; 
+    public DirectionType direction = DirectionType.NORMAL;
+    public ColorType color = ColorType.RED;
 }
 
 public class Directional
@@ -298,6 +299,7 @@ public class Laserv3 : MonoBehaviour
             lasers[i].laser.material = red;
             lasers[i].laser.positionCount = 0;
             lasers[i].direction = DirectionType.NORMAL;
+            lasers[i].color = ColorType.RED;
         }
         lasers[0].active = true;
     }
@@ -373,10 +375,12 @@ public class Laserv3 : MonoBehaviour
         if (mode == ElementType.COLOR_CHANGER_BLUE) 
         {
             lasers[next_laser].laser.material = blue;
+            lasers[next_laser].color = ColorType.BLUE;
         }
         else if (mode == ElementType.COLOR_CHANGER_RED)
         {
             lasers[next_laser].laser.material = red;
+            lasers[next_laser].color = ColorType.RED;
         }
     }
 
@@ -483,7 +487,7 @@ public class Laserv3 : MonoBehaviour
         float distance = Vector3.Distance(lastposition[lasers[i].direction], ray_hit.point);
         lasers[i].laser.SetPosition(div_hits - 1, lastposition[lasers[i].direction] + (direction[lasers[i].direction].normalized * distance));
         hit = false;
-        ray_hit.collider.gameObject.GetComponent<Objective>().HitLaser();
+        ray_hit.collider.gameObject.GetComponent<Objective>().HitLaser(lasers[i].color);
     }
 
     // -----------------------------------------
