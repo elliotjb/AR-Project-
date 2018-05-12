@@ -268,22 +268,20 @@ public class Laserv3 : MonoBehaviour
         float distance = Vector3.Distance(lastLaserPosition, ray_hit.point);
         lasers[i].laser.SetPosition(div_hits - 1, lastLaserPosition + (direction.normalized * distance));
 
-        //Extract the distance from center
-        Vector3 diff = ray_hit.point - ray_hit.transform.position;
-
         lasers[i + 1].active = true;
         lasers[i + 1].laser.positionCount = 1;
-        //delta_angle = Vector3.SignedAngle(portal.GetLinkedDirection(), diff, Vector3.up);
-        //diff = Quaternion.AngleAxis(delta_angle, Vector3.up) * portal.GetLinkedDirection();
-        lastLaserPosition = portal.GetLinkedPosition() + portal.GetLinkedDirection() + diff;
+
+        Vector3 local_hit_point = Vector3.zero;
+        local_hit_point = ray_hit.transform.InverseTransformPoint(ray_hit.point);
+        Vector3 other_hit_point = portal.linked_portal.transform.TransformPoint(local_hit_point);
+        lastLaserPosition = other_hit_point + portal.GetLinkedDirection().normalized * 0.2f;
 
         lasers[i + 1].laser.SetPosition(0, lastLaserPosition);
         angle = Vector3.SignedAngle(direction, portal.transform.forward, Vector3.up);
         direction = Quaternion.AngleAxis(-angle, portal.transform.up) * portal.GetLinkedDirection();
 
         //Set the correct color
-        lasers[i + 1].laser.material = lasers[i].laser.material;
-        
+        lasers[i + 1].laser.material = lasers[i].laser.material;        
 
         hit = false;
     }
