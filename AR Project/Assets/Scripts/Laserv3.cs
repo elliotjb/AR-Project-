@@ -20,11 +20,62 @@ public enum ElementType
     PORTAL,
     PRISM
 }
-            
+
+public enum DirectionType
+{
+    NORMAL = 0,
+    LEFT,
+    RIGHT
+}
+
 public class LaserClass
 {
 	public LineRenderer laser;
 	public bool active = false;
+    public DirectionType direction = DirectionType.NORMAL; 
+}
+
+public class Directional
+{
+
+    public Vector3 this[DirectionType type]
+    {
+        get
+        {
+            if (type == DirectionType.NORMAL)
+            {
+                return direction_normal;
+            }
+            if (type == DirectionType.LEFT)
+            {
+                return direction_left;
+            }
+            if (type == DirectionType.RIGHT)
+            {
+                return direction_right;
+            }
+            return Vector3.zero;
+        }
+        set
+        {
+            if (type == DirectionType.NORMAL)
+            {
+                direction_normal = value;
+            }
+            if (type == DirectionType.LEFT)
+            {
+                direction_left = value;
+            }
+            if (type == DirectionType.RIGHT)
+            {
+                direction_right = value;
+            }
+        }
+    }
+
+    public Vector3 direction_normal = Vector3.zero;
+    public Vector3 direction_left = Vector3.zero;
+    public Vector3 direction_right = Vector3.zero;
 }
 
 public class Laserv3 : MonoBehaviour
@@ -43,12 +94,15 @@ public class Laserv3 : MonoBehaviour
     public Material red;
     public Material blue;
 
+    Directional direction;
+
 
     void Start ()
     {
 		lasers = new List<LaserClass> (10);
+        direction = new Directional();
 
-		for (int i = 0; i < 10; i++) 
+        for (int i = 0; i < 10; i++) 
 		{
 			LaserClass new_laser = new LaserClass();
 			new_laser.laser = Instantiate (laser_temp);
@@ -68,7 +122,7 @@ public class Laserv3 : MonoBehaviour
 	void DoLaser()
 	{
 		Vector3 lastLaserPosition = transform.position;
-		Vector3 direction = transform.forward;
+        direction.direction_normal = transform.forward;
         lasers[0].laser.positionCount = 1;
 		lasers[0].laser.SetPosition(0, transform.position);
 
@@ -86,14 +140,14 @@ public class Laserv3 : MonoBehaviour
 			while (hit)
 			{
 				RaycastHit ray_hit;
-				bool hit_do = Physics.Raycast(lastLaserPosition, direction, out ray_hit, max_distance);
+				bool hit_do = Physics.Raycast(lastLaserPosition, direction[lasers[i].direction], out ray_hit, max_distance);
                 ElementType mode = SelectMode (ray_hit);
 
                 //MODIFY LASER DEPENDING ON THE COLLIDED OBJECT ----------------------------------------------------
 
 				if (mode == ElementType.MIRROR)
                 {
-                    Mirror(ref count_hits, ref div_hits, ray_hit, ref lastLaserPosition, ref direction, i);             
+                    Mirror(ref count_hits, ref div_hits, ray_hit, ref lastLaserPosition, direction, i);             
                 } 
 
 				else if (mode == ElementType.RECEIVER)
@@ -113,12 +167,12 @@ public class Laserv3 : MonoBehaviour
 
                 else if (mode == ElementType.PORTAL)
                 {
-                    Portal(ref count_hits, ref div_hits, ray_hit, ref lastLaserPosition, ref direction, ref hit, i);
+                    Portal(ref count_hits, ref div_hits, ray_hit, ref lastLaserPosition, direction, ref hit, i);
                 }
 
                 else if (mode == ElementType.PRISM)
                 {
-                    Prism(ref count_hits, ref div_hits, ray_hit, ref lastLaserPosition, ref direction, ref hit, i);
+                    Prism(ref count_hits, ref div_hits, ray_hit, ref lastLaserPosition, direction, ref hit, i);
                 }
 
                 else if (mode == ElementType.OBJECTIVE)
@@ -133,7 +187,7 @@ public class Laserv3 : MonoBehaviour
                     count_hits++;
                     div_hits++;
                     lasers[i].laser.positionCount = div_hits;
-					lasers[i].laser.SetPosition (div_hits - 1, lastLaserPosition + (direction.normalized * max_distance));
+					lasers[i].laser.SetPosition (div_hits - 1, lastLaserPosition + (direction[lasers[i].direction].normalized * max_distance));
 					hit = false;
 				}
 
@@ -200,7 +254,7 @@ public class Laserv3 : MonoBehaviour
     //LASER MODIFIER FUNCTIONS -----------------
 
     //Reflect laser depending on the mirror rotation
-    void Mirror(ref int count_hits, ref int div_hits, RaycastHit ray_hit, ref Vector3 lastLaserPosition, ref Vector3 direction, int i)
+    void Mirror(ref int count_hits, ref int div_hits, RaycastHit ray_hit, ref Vector3 lastLaserPosition, Directional direction, int i)
     {
         count_hits++;
         div_hits += 3;
@@ -209,17 +263,17 @@ public class Laserv3 : MonoBehaviour
         lasers[i].laser.SetPosition(div_hits - 2, ray_hit.point);
         lasers[i].laser.SetPosition(div_hits - 1, ray_hit.point);
         lastLaserPosition = ray_hit.point;
-        direction = Vector3.Reflect(direction, ray_hit.normal);
+        direction[lasers[i].direction] = Vector3.Reflect(direction[lasers[i].direction], ray_hit.normal);
     }
 
     //Receive laser to Do Something...
-    void Receiver(ref int count_hits, ref int div_hits, RaycastHit ray_hit, Vector3 lastLaserPosition, Vector3 direction, ref bool hit, int i)
+    void Receiver(ref int count_hits, ref int div_hits, RaycastHit ray_hit, Vector3 lastLaserPosition, Directional direction, ref bool hit, int i)
     {
         count_hits++;
         div_hits++;
         lasers[i].laser.positionCount = div_hits;
         float distance = Vector3.Distance(lastLaserPosition, ray_hit.point);
-        lasers[i].laser.SetPosition(div_hits - 1, lastLaserPosition + (direction.normalized * distance));
+        lasers[i].laser.SetPosition(div_hits - 1, lastLaserPosition + (direction[lasers[i].direction].normalized * distance));
 
         // Do Something...
 
@@ -228,33 +282,34 @@ public class Laserv3 : MonoBehaviour
     }
 
     //Stop the laser line at the hit point
-    void Obstacle(ref int count_hits, ref int div_hits, RaycastHit ray_hit, Vector3 lastLaserPosition, Vector3 direction, ref bool hit, int i)
+    void Obstacle(ref int count_hits, ref int div_hits, RaycastHit ray_hit, Vector3 lastLaserPosition, Directional direction, ref bool hit, int i)
     {
         count_hits++;
         div_hits++;
         lasers[i].laser.positionCount = div_hits;
         float distance = Vector3.Distance(lastLaserPosition, ray_hit.point);
-        lasers[i].laser.SetPosition(div_hits - 1, lastLaserPosition + (direction.normalized * distance));
+        lasers[i].laser.SetPosition(div_hits - 1, lastLaserPosition + (direction[lasers[i].direction].normalized * distance));
         hit = false;
     }
 
     //Change color of the laser: BLUE
-    void ChangeColor(ref int count_hits, ref int div_hits, RaycastHit ray_hit, ref Vector3 lastLaserPosition, Vector3 direction, ref bool hit, ElementType mode, int i)
+    void ChangeColor(ref int count_hits, ref int div_hits, RaycastHit ray_hit, ref Vector3 lastLaserPosition, Directional direction, ref bool hit, ElementType mode, int i)
     {
         count_hits++;
         div_hits++;
         lasers[i].laser.positionCount = div_hits;
         float distance = Vector3.Distance(lastLaserPosition, ray_hit.point);
-        lasers[i].laser.SetPosition(div_hits - 1, lastLaserPosition + (direction.normalized * distance));
+        lasers[i].laser.SetPosition(div_hits - 1, lastLaserPosition + (direction[lasers[i].direction].normalized * distance));
 
         // Do Something...
 
         //Set the laser color
         SetColor(mode, i);
 
+        lasers[i + 1].direction = lasers[i].direction;
         lasers[i + 1].active = true;
         lasers[i + 1].laser.positionCount = 1;
-        lastLaserPosition = ray_hit.point + (direction.normalized * 0.4261f); //0.4261 = Element width
+        lastLaserPosition = ray_hit.point + (direction[lasers[i].direction].normalized * 0.4261f); //0.4261 = Element width
         lasers[i + 1].laser.SetPosition(0, lastLaserPosition);
 
         hit = false;
@@ -274,16 +329,17 @@ public class Laserv3 : MonoBehaviour
     }
 
     //Set the laser at the point of the linked portal
-    void Portal(ref int count_hits, ref int div_hits, RaycastHit ray_hit, ref Vector3 lastLaserPosition, ref Vector3 direction, ref bool hit, int i)
+    void Portal(ref int count_hits, ref int div_hits, RaycastHit ray_hit, ref Vector3 lastLaserPosition, Directional direction, ref bool hit, int i)
     {
         Portal portal = ray_hit.transform.GetComponent<Portal>();
 
         count_hits++;
         div_hits++;
 
+        lasers[i + 1].direction = lasers[i].direction;
         lasers[i].laser.positionCount = div_hits;
         float distance = Vector3.Distance(lastLaserPosition, ray_hit.point);
-        lasers[i].laser.SetPosition(div_hits - 1, lastLaserPosition + (direction.normalized * distance));
+        lasers[i].laser.SetPosition(div_hits - 1, lastLaserPosition + (direction[lasers[i].direction].normalized * distance));
 
         lasers[i + 1].active = true;
         lasers[i + 1].laser.positionCount = 1;
@@ -294,8 +350,8 @@ public class Laserv3 : MonoBehaviour
         lastLaserPosition = other_hit_point - portal.GetLinkedDirection().normalized * 0.2f;
 
         lasers[i + 1].laser.SetPosition(0, lastLaserPosition);
-        angle = Vector3.SignedAngle(direction, portal.transform.forward, Vector3.up);
-        direction = Quaternion.AngleAxis(-angle, portal.transform.up) * -portal.GetLinkedDirection();
+        angle = Vector3.SignedAngle(direction[lasers[i].direction], portal.transform.forward, Vector3.up);
+        direction[lasers[i].direction] = Quaternion.AngleAxis(-angle, portal.transform.up) * -portal.GetLinkedDirection();
 
         //Set the correct color
         lasers[i + 1].laser.material = lasers[i].laser.material;        
@@ -304,7 +360,7 @@ public class Laserv3 : MonoBehaviour
     }
 
 
-    void Prism(ref int count_hits, ref int div_hits, RaycastHit ray_hit, ref Vector3 lastLaserPosition, ref Vector3 direction, ref bool hit, int i)
+    void Prism(ref int count_hits, ref int div_hits, RaycastHit ray_hit, ref Vector3 lastLaserPosition, Directional direction, ref bool hit, int i)
     {
         Prism prism = ray_hit.transform.GetComponent<Prism>();
 
@@ -314,7 +370,7 @@ public class Laserv3 : MonoBehaviour
 
         lasers[i].laser.positionCount = div_hits;
         float distance = Vector3.Distance(lastLaserPosition, ray_hit.point);
-        lasers[i].laser.SetPosition(div_hits - 1, lastLaserPosition + (direction.normalized * distance));
+        lasers[i].laser.SetPosition(div_hits - 1, lastLaserPosition + (direction[lasers[i].direction].normalized * distance));
 
         lasers[i + 1].active = true;
         lasers[i + 1].laser.positionCount = 1;
@@ -328,21 +384,26 @@ public class Laserv3 : MonoBehaviour
         lastLaserPosition = other_hit_point + prism.GetFace1Direction().normalized * 0.5f;
         lasers[i + 1].laser.SetPosition(0, lastLaserPosition);
 
-        direction = prism.GetFace1Direction();
-
         //Set the correct color
         lasers[i + 1].laser.material = lasers[i].laser.material;
+        lasers[i + 1].direction = DirectionType.LEFT;
+
+        direction[lasers[i + 1].direction] = prism.GetFace1Direction();
+
+        // --------------------------------------------------------------
+        //Change direction use lasers[i].direction = DirectionType.??????; 
+        // --------------------------------------------------------------
 
         hit = false;
     }
 
-    void Objective(ref int count_hits, ref int div_hits, RaycastHit ray_hit, Vector3 lastLaserPosition, Vector3 direction, ref bool hit, int i)
+    void Objective(ref int count_hits, ref int div_hits, RaycastHit ray_hit, Vector3 lastLaserPosition, Directional direction, ref bool hit, int i)
     {
         count_hits++;
         div_hits++;
         lasers[i].laser.positionCount = div_hits;
         float distance = Vector3.Distance(lastLaserPosition, ray_hit.point);
-        lasers[i].laser.SetPosition(div_hits - 1, lastLaserPosition + (direction.normalized * distance));
+        lasers[i].laser.SetPosition(div_hits - 1, lastLaserPosition + (direction[lasers[i].direction].normalized * distance));
         hit = false;
         ray_hit.collider.gameObject.GetComponent<Objective>().HitLaser();
     }

@@ -1,4 +1,4 @@
 sceneSetups:
-- path: Assets/AR Project.unity
+- path: Assets/Jordi Scene.unity
   isLoaded: 1
   isActive: 1
