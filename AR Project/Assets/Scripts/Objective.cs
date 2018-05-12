@@ -24,7 +24,8 @@ public class Objective : MonoBehaviour
     {
         NONE = -1,
         PROGRESIVE,
-        DIRECT
+        DIRECT,
+        SPECIAL
     }
 
     public ObjectiveMode mode;
@@ -43,10 +44,13 @@ public class Objective : MonoBehaviour
         {
             if(hit)
             {
-                time += Time.deltaTime;
                 if (time > time_progresive)
                 {
                     ChangeColor(actualColor);
+                }
+                else
+                {
+                    time += Time.deltaTime;
                 }
             }
             else
@@ -64,6 +68,29 @@ public class Objective : MonoBehaviour
             else
             {
                 ChangeColor(reset_color);
+            }
+        }
+        else if (mode == ObjectiveMode.SPECIAL)
+        {
+            if (hit)
+            {
+                if (time > time_progresive)
+                {
+                    ChangeColor(actualColor);
+                }
+                else
+                {
+                    time += Time.deltaTime;
+                }
+            }
+            else
+            {
+                time -= Time.deltaTime;
+                if (time <= 0.0f)
+                {
+                    time = 0.0f;
+                    ChangeColor(reset_color);
+                }
             }
         }
         hit = false;
