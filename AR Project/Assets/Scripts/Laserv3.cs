@@ -16,7 +16,8 @@ public enum ElementType
     LAST_COLOR,
     // --------------------------------------------------
 
-    PORTAL
+    PORTAL,
+    PRISM
 }
             
 public class LaserClass
@@ -67,7 +68,6 @@ public class Laserv3 : MonoBehaviour
 	{
 		Vector3 lastLaserPosition = transform.position;
 		Vector3 direction = transform.forward;
-        Debug.Log("Laser Direction: " + direction);
         lasers[0].laser.positionCount = 1;
 		lasers[0].laser.SetPosition(0, transform.position);
 
@@ -115,6 +115,10 @@ public class Laserv3 : MonoBehaviour
                     Portal(ref count_hits, ref div_hits, ray_hit, ref lastLaserPosition, ref direction, ref hit, i);
                 }
 
+                else if (mode == ElementType.PRISM)
+                {
+                    Prism(ref count_hits, ref div_hits, ray_hit, ref lastLaserPosition, ref direction, ref hit, i);
+                }
                 // --------------------------------------------------------------------------------------------------------------
 
                 //END OF LASER, LAST LINE
@@ -154,6 +158,10 @@ public class Laserv3 : MonoBehaviour
             else if (hit.transform.tag.Equals("Portal"))
             {
                 return ElementType.PORTAL;
+            }
+            else if (hit.transform.tag.Equals("Prism"))
+            {
+                return ElementType.PRISM;
             }
             else if (hit.transform.tag.Equals("ColorBlue"))
             {
@@ -239,7 +247,6 @@ public class Laserv3 : MonoBehaviour
         lastLaserPosition = ray_hit_point + (direction.normalized * 0.4261f); //0.4261 = Element width
         lasers[i + 1].laser.SetPosition(0, lastLaserPosition);
 
-
         hit = false;
     }
 
@@ -274,14 +281,47 @@ public class Laserv3 : MonoBehaviour
         Vector3 local_hit_point = Vector3.zero;
         local_hit_point = ray_hit.transform.InverseTransformPoint(ray_hit.point);
         Vector3 other_hit_point = portal.linked_portal.transform.TransformPoint(local_hit_point);
-        lastLaserPosition = other_hit_point + portal.GetLinkedDirection().normalized * 0.2f;
+        lastLaserPosition = other_hit_point - portal.GetLinkedDirection().normalized * 0.2f;
 
         lasers[i + 1].laser.SetPosition(0, lastLaserPosition);
         angle = Vector3.SignedAngle(direction, portal.transform.forward, Vector3.up);
-        direction = Quaternion.AngleAxis(-angle, portal.transform.up) * portal.GetLinkedDirection();
+        direction = Quaternion.AngleAxis(-angle, portal.transform.up) * -portal.GetLinkedDirection();
 
         //Set the correct color
         lasers[i + 1].laser.material = lasers[i].laser.material;        
+
+        hit = false;
+    }
+
+
+    void Prism(ref int count_hits, ref int div_hits, RaycastHit ray_hit, ref Vector3 lastLaserPosition, ref Vector3 direction, ref bool hit, int i)
+    {
+        Prism prism = ray_hit.transform.GetComponent<Prism>();
+
+        count_hits++;
+        //div_hits+=2;
+        div_hits++;
+
+        lasers[i].laser.positionCount = div_hits;
+        float distance = Vector3.Distance(lastLaserPosition, ray_hit.point);
+        lasers[i].laser.SetPosition(div_hits - 1, lastLaserPosition + (direction.normalized * distance));
+
+        lasers[i + 1].active = true;
+        lasers[i + 1].laser.positionCount = 1;
+        //lastLaserPosition = prism.GetFace1Position() + prism.GetFace1Direction().normalized * 0.4f;
+        //lastLaserPosition.y = ray_hit.point.y;
+        //lasers[i + 1].laser.SetPosition(0, lastLaserPosition);
+
+        Vector3 local_hit_point = Vector3.zero;
+        local_hit_point = ray_hit.transform.InverseTransformPoint(ray_hit.point);
+        Vector3 other_hit_point = prism.other_face_1.transform.TransformPoint(local_hit_point);
+        lastLaserPosition = other_hit_point + prism.GetFace1Direction().normalized * 0.5f;
+        lasers[i + 1].laser.SetPosition(0, lastLaserPosition);
+
+        direction = prism.GetFace1Direction();
+
+        //Set the correct color
+        lasers[i + 1].laser.material = lasers[i].laser.material;
 
         hit = false;
     }
