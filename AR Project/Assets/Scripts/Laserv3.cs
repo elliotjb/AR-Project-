@@ -304,27 +304,27 @@ public class Laserv3 : MonoBehaviour
         // Do Something...
 
         //Set the laser color
-        SetColor(mode, i);
-
-        lasers[i + 1].direction = lasers[i].direction;
-        lasers[i + 1].active = true;
-        lasers[i + 1].laser.positionCount = 1;
+        int next_laser = GetAvailableLaser();
+        SetColor(mode, next_laser);
+        lasers[next_laser].direction = lasers[i].direction;
+        lasers[next_laser].active = true;
+        lasers[next_laser].laser.positionCount = 1;
         lastLaserPosition = ray_hit.point + (direction[lasers[i].direction].normalized * 0.4261f); //0.4261 = Element width
-        lasers[i + 1].laser.SetPosition(0, lastLaserPosition);
+        lasers[next_laser].laser.SetPosition(0, lastLaserPosition);
 
         hit = false;
     }
 
     //Set the color of the laser depending on its previously compared tag
-    void SetColor(ElementType mode, int i)
+    void SetColor(ElementType mode, int next_laser)
     {
         if (mode == ElementType.COLOR_CHANGER_BLUE) 
         {
-            lasers[i + 1].laser.material = blue;
+            lasers[next_laser].laser.material = blue;
         }
         else if (mode == ElementType.COLOR_CHANGER_RED)
         {
-            lasers[i + 1].laser.material = red;
+            lasers[next_laser].laser.material = red;
         }
     }
 
@@ -336,25 +336,26 @@ public class Laserv3 : MonoBehaviour
         count_hits++;
         div_hits++;
 
-        lasers[i + 1].direction = lasers[i].direction;
         lasers[i].laser.positionCount = div_hits;
         float distance = Vector3.Distance(lastLaserPosition, ray_hit.point);
         lasers[i].laser.SetPosition(div_hits - 1, lastLaserPosition + (direction[lasers[i].direction].normalized * distance));
 
-        lasers[i + 1].active = true;
-        lasers[i + 1].laser.positionCount = 1;
+        int next_laser = GetAvailableLaser();
+        lasers[next_laser].active = true;
+        lasers[next_laser].direction = lasers[i].direction;
+        lasers[next_laser].laser.positionCount = 1;
 
         Vector3 local_hit_point = Vector3.zero;
         local_hit_point = ray_hit.transform.InverseTransformPoint(ray_hit.point);
         Vector3 other_hit_point = portal.linked_portal.transform.TransformPoint(local_hit_point);
         lastLaserPosition = other_hit_point - portal.GetLinkedDirection().normalized * 0.2f;
 
-        lasers[i + 1].laser.SetPosition(0, lastLaserPosition);
+        lasers[next_laser].laser.SetPosition(0, lastLaserPosition);
         angle = Vector3.SignedAngle(direction[lasers[i].direction], portal.transform.forward, Vector3.up);
         direction[lasers[i].direction] = Quaternion.AngleAxis(-angle, portal.transform.up) * -portal.GetLinkedDirection();
 
         //Set the correct color
-        lasers[i + 1].laser.material = lasers[i].laser.material;        
+        lasers[next_laser].laser.material = lasers[i].laser.material;        
 
         hit = false;
     }
@@ -364,37 +365,63 @@ public class Laserv3 : MonoBehaviour
     {
         Prism prism = ray_hit.transform.GetComponent<Prism>();
 
-        count_hits++;
-        //div_hits+=2;
+        count_hits+=2;
         div_hits++;
 
         lasers[i].laser.positionCount = div_hits;
         float distance = Vector3.Distance(lastLaserPosition, ray_hit.point);
         lasers[i].laser.SetPosition(div_hits - 1, lastLaserPosition + (direction[lasers[i].direction].normalized * distance));
 
-        lasers[i + 1].active = true;
-        lasers[i + 1].laser.positionCount = 1;
-        //lastLaserPosition = prism.GetFace1Position() + prism.GetFace1Direction().normalized * 0.4f;
-        //lastLaserPosition.y = ray_hit.point.y;
+        //Vector3 local_hit_point = Vector3.zero;
+        //local_hit_point = ray_hit.transform.InverseTransformPoint(ray_hit.point);
+        //Vector3 other_hit_point = prism.other_face_1.transform.TransformPoint(local_hit_point);
+        //lastLaserPosition = other_hit_point + prism.GetFace1Direction().normalized * 0.5f;
         //lasers[i + 1].laser.SetPosition(0, lastLaserPosition);
 
-        Vector3 local_hit_point = Vector3.zero;
-        local_hit_point = ray_hit.transform.InverseTransformPoint(ray_hit.point);
-        Vector3 other_hit_point = prism.other_face_1.transform.TransformPoint(local_hit_point);
-        lastLaserPosition = other_hit_point + prism.GetFace1Direction().normalized * 0.5f;
-        lasers[i + 1].laser.SetPosition(0, lastLaserPosition);
+        int next_laser = GetAvailableLaser();
+
+        //LASER LEFT
+        lasers[next_laser].active = true;
+        lasers[next_laser].laser.positionCount = 1;
+        lastLaserPosition = prism.GetFace1Position() + prism.GetFace1Direction().normalized * 0.4f;
+        lastLaserPosition.y = ray_hit.point.y;
+        lasers[next_laser].laser.SetPosition(0, lastLaserPosition);
 
         //Set the correct color
-        lasers[i + 1].laser.material = lasers[i].laser.material;
-        lasers[i + 1].direction = DirectionType.LEFT;
+        lasers[next_laser].laser.material = lasers[i].laser.material;
+        lasers[next_laser].direction = DirectionType.LEFT;
 
-        direction[lasers[i + 1].direction] = prism.GetFace1Direction();
+        direction[lasers[next_laser].direction] = prism.GetFace1Direction();
 
-        // --------------------------------------------------------------
-        //Change direction use lasers[i].direction = DirectionType.??????; 
-        // --------------------------------------------------------------
+        //LASER RIGHT
+        next_laser = GetAvailableLaser();
+
+        lasers[next_laser].active = true;
+        lasers[next_laser].laser.positionCount = 1;
+        lastLaserPosition = prism.GetFace2Position() + prism.GetFace2Direction().normalized * 0.4f;
+        lastLaserPosition.y = ray_hit.point.y;
+        lasers[next_laser].laser.SetPosition(0, lastLaserPosition);
+
+        //Set the correct color
+        lasers[next_laser].laser.material = lasers[i].laser.material;
+        lasers[next_laser].direction = DirectionType.RIGHT;
+
+        direction[lasers[next_laser].direction] = prism.GetFace2Direction();
 
         hit = false;
+    }
+
+    int GetAvailableLaser()
+    {
+        for (int i = 0; i < lasers.Count; i++) 
+        {
+            if (lasers[i].active == false)
+            {
+                return i;
+            }
+        }
+
+        return -1;
     }
 
     void Objective(ref int count_hits, ref int div_hits, RaycastHit ray_hit, Vector3 lastLaserPosition, Directional direction, ref bool hit, int i)
