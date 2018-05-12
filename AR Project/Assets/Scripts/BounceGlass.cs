@@ -30,12 +30,12 @@ public class BounceGlass : MonoBehaviour {
 
     void OnCollisionEnter(Collision collider)
     {
-        if (active)
-        {
-            Vector3 reflect = Vector3.Reflect(collider.gameObject.transform.TransformDirection(Vector3.forward), collider.contacts[0].normal);
-            manager_lasers.GetComponent<Laser>().CreateNewLaser(collider.transform, reflect);
-            manager_lasers.GetComponent<Laser>().DesactivateLaser(collider.gameObject);
-            active = false;
-        }
+        //if (active)
+        //{
+        //    Vector3 reflect = Vector3.Reflect(collider.gameObject.transform.TransformDirection(Vector3.forward), collider.contacts[0].normal);
+        //    manager_lasers.GetComponent<Laser>().CreateNewLaser(collider.transform, reflect);
+        //    manager_lasers.GetComponent<Laser>().DesactivateLaser(collider.gameObject);
+        //    active = false;
+        //}
     }
 }

@@ -10,6 +10,8 @@ TagManager:
   - Receiver
   - ColorRed
   - Portal
+  - Prism
+  - Objective
   layers:
   - Default
   - TransparentFX
