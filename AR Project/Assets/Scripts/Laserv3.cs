@@ -308,7 +308,7 @@ public class Laserv3 : MonoBehaviour
             lasers[i].direction = DirectionType.NORMAL;
             lasers[i].color = ColorType.RED;
 
-            if(lasers[i].type_hit != ElementType.OBSTACLE)
+            if(lasers[i].type_hit != ElementType.OBSTACLE && lasers[i].type_hit != ElementType.OBJECTIVE)
             {
                 lasers[i].particles_collision.Stop();
             }
@@ -513,6 +513,12 @@ public class Laserv3 : MonoBehaviour
         hit = false;
         ray_hit.collider.gameObject.GetComponent<Objective>().HitLaser(lasers[i].color);
 
+        if (!lasers[i].particles_collision.isEmitting)
+        {
+            lasers[i].particles_collision.Play();
+        }
+        lasers[i].particles_collision.transform.position = lastposition[lasers[i].direction] + (direction[lasers[i].direction].normalized * distance);
+        lasers[i].particles_collision.transform.rotation = Quaternion.LookRotation(ray_hit.normal);
         lasers[i].type_hit = ElementType.OBJECTIVE;
     }
 

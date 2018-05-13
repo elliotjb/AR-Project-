@@ -9,6 +9,12 @@ public enum ColorType
     RED
 }
 
+public enum StateType
+{
+    DESACTIVATED = 0,
+    ACTIVATED
+}
+
 public class Objective : MonoBehaviour
 {
     public Material color_red;
@@ -19,6 +25,8 @@ public class Objective : MonoBehaviour
     bool hit = false;
     public ColorType actualColor = ColorType.WHITE;
     public ColorType reset_color = ColorType.WHITE;
+
+    public StateType state = StateType.DESACTIVATED;
 
     public enum ObjectiveMode
     {
@@ -47,6 +55,7 @@ public class Objective : MonoBehaviour
                 if (time > time_progresive)
                 {
                     ChangeColor(actualColor);
+                    state = StateType.ACTIVATED;
                 }
                 else
                 {
@@ -57,6 +66,7 @@ public class Objective : MonoBehaviour
             {
                 time = 0.0f;
                 ChangeColor(reset_color);
+                state = StateType.DESACTIVATED;
             }
         }
         else if (mode == ObjectiveMode.DIRECT)
@@ -64,10 +74,12 @@ public class Objective : MonoBehaviour
             if (hit)
             {
                 ChangeColor(actualColor);
+                state = StateType.ACTIVATED;
             }
             else
             {
                 ChangeColor(reset_color);
+                state = StateType.DESACTIVATED;
             }
         }
         else if (mode == ObjectiveMode.SPECIAL)
@@ -77,6 +89,7 @@ public class Objective : MonoBehaviour
                 if (time > time_progresive)
                 {
                     ChangeColor(actualColor);
+                    state = StateType.ACTIVATED;
                 }
                 else
                 {
@@ -90,6 +103,7 @@ public class Objective : MonoBehaviour
                 {
                     time = 0.0f;
                     ChangeColor(reset_color);
+                    state = StateType.DESACTIVATED;
                 }
             }
         }
