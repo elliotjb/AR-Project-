@@ -152,34 +152,6 @@ Prefab:
       propertyPath: m_RootOrder
       value: 0
       objectReference: {fileID: 0}
-    - target: {fileID: 4795284246818568, guid: 3ff9e0b60bbddf143940431a338c6f3e, type: 2}
-      propertyPath: m_LocalScale.x
-      value: 0.05973619
-      objectReference: {fileID: 0}
-    - target: {fileID: 4795284246818568, guid: 3ff9e0b60bbddf143940431a338c6f3e, type: 2}
-      propertyPath: m_LocalScale.y
-      value: 0.059736222
-      objectReference: {fileID: 0}
-    - target: {fileID: 4795284246818568, guid: 3ff9e0b60bbddf143940431a338c6f3e, type: 2}
-      propertyPath: m_LocalScale.z
-      value: 0.05973625
-      objectReference: {fileID: 0}
-    - target: {fileID: 4795284246818568, guid: 3ff9e0b60bbddf143940431a338c6f3e, type: 2}
-      propertyPath: m_LocalEulerAnglesHint.y
-      value: 47.547
-      objectReference: {fileID: 0}
-    - target: {fileID: 4742518594409152, guid: 3ff9e0b60bbddf143940431a338c6f3e, type: 2}
-      propertyPath: m_LocalScale.x
-      value: 1.1844815
-      objectReference: {fileID: 0}
-    - target: {fileID: 4742518594409152, guid: 3ff9e0b60bbddf143940431a338c6f3e, type: 2}
-      propertyPath: m_LocalScale.y
-      value: 1.184481
-      objectReference: {fileID: 0}
-    - target: {fileID: 4742518594409152, guid: 3ff9e0b60bbddf143940431a338c6f3e, type: 2}
-      propertyPath: m_LocalScale.z
-      value: 1.2712579
-      objectReference: {fileID: 0}
     - target: {fileID: 198432268785417276, guid: 3ff9e0b60bbddf143940431a338c6f3e,
         type: 2}
       propertyPath: CollisionModule.plane0
@@ -1158,6 +1130,7 @@ MonoBehaviour:
   objectives:
   - {fileID: 933359254}
   next_level: Level2
+  time_to_complet: 2
 --- !u!4 &1698406526
 Transform:
   m_ObjectHideFlags: 0
