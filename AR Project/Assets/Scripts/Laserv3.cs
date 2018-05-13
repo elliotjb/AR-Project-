@@ -34,6 +34,9 @@ public class LaserClass
 	public bool active = false;
     public DirectionType direction = DirectionType.NORMAL;
     public ColorType color = ColorType.RED;
+    public ParticleSystem particles_collision;
+
+    public ElementType type_hit = ElementType.NONE;
 }
 
 public class Directional
@@ -137,6 +140,8 @@ public class Laserv3 : MonoBehaviour
     public Material red;
     public Material blue;
 
+    public ParticleSystem particles;
+
     Directional direction;
     LastPosition lastposition;
 
@@ -151,7 +156,9 @@ public class Laserv3 : MonoBehaviour
 		{
 			LaserClass new_laser = new LaserClass();
 			new_laser.laser = Instantiate (laser_temp);
-			lasers.Add(new_laser);
+            new_laser.particles_collision = Instantiate(particles);
+            new_laser.particles_collision.Stop();
+            lasers.Add(new_laser);
 		}
 		lasers [0].active = true;
 	}
@@ -300,6 +307,12 @@ public class Laserv3 : MonoBehaviour
             lasers[i].laser.positionCount = 0;
             lasers[i].direction = DirectionType.NORMAL;
             lasers[i].color = ColorType.RED;
+
+            if(lasers[i].type_hit != ElementType.OBSTACLE)
+            {
+                lasers[i].particles_collision.Stop();
+            }
+            lasers[i].type_hit = ElementType.NONE;
         }
         lasers[0].active = true;
     }
@@ -318,6 +331,8 @@ public class Laserv3 : MonoBehaviour
         lasers[i].laser.SetPosition(div_hits - 1, ray_hit.point);
         lastposition[lasers[i].direction] = ray_hit.point;
         direction[lasers[i].direction] = Vector3.Reflect(direction[lasers[i].direction], ray_hit.normal);
+
+        lasers[i].type_hit = ElementType.MIRROR;
     }
 
     //Receive laser to Do Something...
@@ -331,7 +346,7 @@ public class Laserv3 : MonoBehaviour
 
         // Do Something...
 
-
+        lasers[i].type_hit = ElementType.RECEIVER;
         hit = false;
     }
 
@@ -343,6 +358,15 @@ public class Laserv3 : MonoBehaviour
         lasers[i].laser.positionCount = div_hits;
         float distance = Vector3.Distance(lastposition[lasers[i].direction], ray_hit.point);
         lasers[i].laser.SetPosition(div_hits - 1, lastposition[lasers[i].direction] + (direction[lasers[i].direction].normalized * distance));
+
+        if (!lasers[i].particles_collision.isEmitting)
+        {
+            lasers[i].particles_collision.Play();
+        }
+        lasers[i].particles_collision.transform.position = lastposition[lasers[i].direction] + (direction[lasers[i].direction].normalized * distance);
+        lasers[i].particles_collision.transform.rotation = Quaternion.LookRotation(ray_hit.normal);
+
+        lasers[i].type_hit = ElementType.OBSTACLE;
         hit = false;
     }
 
@@ -488,6 +512,8 @@ public class Laserv3 : MonoBehaviour
         lasers[i].laser.SetPosition(div_hits - 1, lastposition[lasers[i].direction] + (direction[lasers[i].direction].normalized * distance));
         hit = false;
         ray_hit.collider.gameObject.GetComponent<Objective>().HitLaser(lasers[i].color);
+
+        lasers[i].type_hit = ElementType.OBJECTIVE;
     }
 
     // -----------------------------------------
