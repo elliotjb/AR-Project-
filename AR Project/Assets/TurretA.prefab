@@ -996,6 +996,8 @@ MonoBehaviour:
   delta_angle: 0
   red: {fileID: 2100000, guid: df221e7d997abd84d9649670709c7091, type: 2}
   blue: {fileID: 2100000, guid: 27d01979cb5efae4eba8b4261fd95044, type: 2}
+  particles: {fileID: 198406271643392794, guid: 2f1a0785d78734644bc37ed53d5983d4,
+    type: 2}
 --- !u!135 &135984167766889890
 SphereCollider:
   m_ObjectHideFlags: 1
