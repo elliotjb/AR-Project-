@@ -123,31 +123,31 @@ Prefab:
     m_Modifications:
     - target: {fileID: 4795284246818568, guid: 3ff9e0b60bbddf143940431a338c6f3e, type: 2}
       propertyPath: m_LocalPosition.x
-      value: -5.789
+      value: -5.972726
       objectReference: {fileID: 0}
     - target: {fileID: 4795284246818568, guid: 3ff9e0b60bbddf143940431a338c6f3e, type: 2}
       propertyPath: m_LocalPosition.y
-      value: 0.110000014
+      value: 0.09000003
       objectReference: {fileID: 0}
     - target: {fileID: 4795284246818568, guid: 3ff9e0b60bbddf143940431a338c6f3e, type: 2}
       propertyPath: m_LocalPosition.z
-      value: 8.566
+      value: 8.570874
       objectReference: {fileID: 0}
     - target: {fileID: 4795284246818568, guid: 3ff9e0b60bbddf143940431a338c6f3e, type: 2}
       propertyPath: m_LocalRotation.x
-      value: 0.00000000602419
+      value: 0.000000006317532
       objectReference: {fileID: 0}
     - target: {fileID: 4795284246818568, guid: 3ff9e0b60bbddf143940431a338c6f3e, type: 2}
       propertyPath: m_LocalRotation.y
-      value: -0.96126246
+      value: -0.9650247
       objectReference: {fileID: 0}
     - target: {fileID: 4795284246818568, guid: 3ff9e0b60bbddf143940431a338c6f3e, type: 2}
       propertyPath: m_LocalRotation.z
-      value: -0.00000002100906
+      value: -0.000000020922725
       objectReference: {fileID: 0}
     - target: {fileID: 4795284246818568, guid: 3ff9e0b60bbddf143940431a338c6f3e, type: 2}
       propertyPath: m_LocalRotation.w
-      value: 0.27563477
+      value: 0.2621591
       objectReference: {fileID: 0}
     - target: {fileID: 4795284246818568, guid: 3ff9e0b60bbddf143940431a338c6f3e, type: 2}
       propertyPath: m_RootOrder
@@ -158,6 +158,22 @@ Prefab:
       propertyPath: CollisionModule.plane0
       value: 
       objectReference: {fileID: 901468242}
+    - target: {fileID: 4795284246818568, guid: 3ff9e0b60bbddf143940431a338c6f3e, type: 2}
+      propertyPath: m_LocalScale.x
+      value: 1.1321225
+      objectReference: {fileID: 0}
+    - target: {fileID: 4795284246818568, guid: 3ff9e0b60bbddf143940431a338c6f3e, type: 2}
+      propertyPath: m_LocalScale.y
+      value: 1.1321228
+      objectReference: {fileID: 0}
+    - target: {fileID: 4795284246818568, guid: 3ff9e0b60bbddf143940431a338c6f3e, type: 2}
+      propertyPath: m_LocalScale.z
+      value: 1.1321234
+      objectReference: {fileID: 0}
+    - target: {fileID: 4795284246818568, guid: 3ff9e0b60bbddf143940431a338c6f3e, type: 2}
+      propertyPath: m_LocalEulerAnglesHint.y
+      value: 210.396
+      objectReference: {fileID: 0}
     m_RemovedComponents: []
   m_ParentPrefab: {fileID: 100100000, guid: 3ff9e0b60bbddf143940431a338c6f3e, type: 2}
   m_IsPrefabParent: 0
@@ -259,6 +275,7 @@ MonoBehaviour:
   time_progresive: 1
   actualColor: 0
   reset_color: 0
+  state: 0
   mode: 2
 --- !u!135 &57730377
 SphereCollider:
@@ -363,6 +380,7 @@ MonoBehaviour:
   time_progresive: 1
   actualColor: 0
   reset_color: 0
+  state: 0
   mode: 1
 --- !u!135 &58803657
 SphereCollider:
@@ -472,6 +490,7 @@ MonoBehaviour:
   time_progresive: 1
   actualColor: 0
   reset_color: 0
+  state: 0
   mode: 1
 --- !u!135 &129557380
 SphereCollider:
@@ -698,6 +717,7 @@ MonoBehaviour:
   time_progresive: 1
   actualColor: 0
   reset_color: 0
+  state: 0
   mode: 1
 --- !u!135 &152280945
 SphereCollider:
@@ -929,6 +949,7 @@ MonoBehaviour:
   time_progresive: 1
   actualColor: 0
   reset_color: 0
+  state: 0
   mode: 2
 --- !u!135 &355344590
 SphereCollider:
@@ -1167,6 +1188,7 @@ MonoBehaviour:
   time_progresive: 1
   actualColor: 0
   reset_color: 0
+  state: 0
   mode: 1
 --- !u!135 &420351026
 SphereCollider:
@@ -1497,6 +1519,7 @@ MonoBehaviour:
   time_progresive: 1
   actualColor: 0
   reset_color: 0
+  state: 0
   mode: 1
 --- !u!135 &810251525
 SphereCollider:
@@ -1723,6 +1746,7 @@ MonoBehaviour:
   time_progresive: 1
   actualColor: 0
   reset_color: 0
+  state: 0
   mode: 1
 --- !u!135 &853727328
 SphereCollider:
@@ -1827,6 +1851,7 @@ MonoBehaviour:
   time_progresive: 1
   actualColor: 0
   reset_color: 0
+  state: 0
   mode: 1
 --- !u!135 &874143688
 SphereCollider:
@@ -2063,6 +2088,7 @@ MonoBehaviour:
   time_progresive: 1
   actualColor: 0
   reset_color: 0
+  state: 0
   mode: 1
 --- !u!135 &1162008897
 SphereCollider:
@@ -2303,6 +2329,7 @@ MonoBehaviour:
   time_progresive: 1
   actualColor: 0
   reset_color: 0
+  state: 0
   mode: 0
 --- !u!135 &1291993719
 SphereCollider:
@@ -2407,6 +2434,7 @@ MonoBehaviour:
   time_progresive: 1
   actualColor: 0
   reset_color: 0
+  state: 0
   mode: 1
 --- !u!135 &1332979053
 SphereCollider:
@@ -2511,6 +2539,7 @@ MonoBehaviour:
   time_progresive: 1
   actualColor: 0
   reset_color: 0
+  state: 0
   mode: 1
 --- !u!135 &1423985005
 SphereCollider:
@@ -2615,6 +2644,7 @@ MonoBehaviour:
   time_progresive: 1
   actualColor: 0
   reset_color: 0
+  state: 0
   mode: 1
 --- !u!135 &1500139630
 SphereCollider:
@@ -2813,6 +2843,7 @@ MonoBehaviour:
   time_progresive: 1
   actualColor: 0
   reset_color: 0
+  state: 0
   mode: 1
 --- !u!135 &1536764893
 SphereCollider:
@@ -2917,6 +2948,7 @@ MonoBehaviour:
   time_progresive: 1
   actualColor: 0
   reset_color: 0
+  state: 0
   mode: 1
 --- !u!135 &1620406467
 SphereCollider:
@@ -3072,6 +3104,7 @@ MonoBehaviour:
   time_progresive: 1
   actualColor: 0
   reset_color: 0
+  state: 0
   mode: 1
 --- !u!135 &1803003125
 SphereCollider:
