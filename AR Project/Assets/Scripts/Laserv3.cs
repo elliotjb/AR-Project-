@@ -431,7 +431,12 @@ public class Laserv3 : MonoBehaviour
         lastposition[lasers[next_laser].direction] = other_hit_point - portal.GetLinkedDirection().normalized * 0.2f;
 
         lasers[next_laser].laser.SetPosition(0, lastposition[lasers[next_laser].direction]);
-        angle = Vector3.SignedAngle(direction[lasers[i].direction], portal.transform.forward, Vector3.up);
+        angle = Vector3.Angle(direction[lasers[i].direction], portal.transform.forward);
+        Vector3 cross = Vector3.Cross(direction[lasers[i].direction], portal.transform.forward);
+        if (cross.y < 0) 
+        {
+            angle = -angle;
+        }
         direction[lasers[i].direction] = Quaternion.AngleAxis(-angle, portal.transform.up) * -portal.GetLinkedDirection();
 
         //Set the correct color
