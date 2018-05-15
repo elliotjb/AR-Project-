@@ -38,7 +38,7 @@ RenderSettings:
   m_ReflectionIntensity: 1
   m_CustomReflection: {fileID: 0}
   m_Sun: {fileID: 0}
-  m_IndirectSpecularColor: {r: 0.44657898, g: 0.4964133, b: 0.5748178, a: 1}
+  m_IndirectSpecularColor: {r: 0.44657844, g: 0.49641222, b: 0.57481694, a: 1}
   m_UseRadianceAmbientProbe: 0
 --- !u!157 &3
 LightmapSettings:
@@ -123,7 +123,7 @@ GameObject:
   - component: {fileID: 180319568}
   - component: {fileID: 180319567}
   m_Layer: 0
-  m_Name: ManagerObjectives
+  m_Name: LevelManager
   m_TagString: Untagged
   m_Icon: {fileID: 0}
   m_NavMeshLayer: 0
@@ -207,8 +207,10 @@ MonoBehaviour:
   m_EditorClassIdentifier: 
   color_red: {fileID: 2100000, guid: 89eef3c9c11b3da449ea002a14edd026, type: 2}
   color_blue: {fileID: 2100000, guid: a262c6ec349227142882ed353d97b2b5, type: 2}
-  color_white: {fileID: 2100000, guid: bacb5d67b493e1141895a610848fcbf4, type: 2}
+  color_blue_dark: {fileID: 2100000, guid: a030d0a2db2be264388c384cceb9217e, type: 2}
+  color_red_dark: {fileID: 2100000, guid: 5df9545ceacaf9f44850e72508dd1761, type: 2}
   time_progresive: 1.5
+  light_color: 2
   actualColor: 0
   reset_color: 0
   state: 0
@@ -240,7 +242,7 @@ MeshRenderer:
   m_ReflectionProbeUsage: 1
   m_RenderingLayerMask: 4294967295
   m_Materials:
-  - {fileID: 2100000, guid: bacb5d67b493e1141895a610848fcbf4, type: 2}
+  - {fileID: 2100000, guid: 5df9545ceacaf9f44850e72508dd1761, type: 2}
   m_StaticBatchInfo:
     firstSubMesh: 0
     subMeshCount: 0
@@ -445,6 +447,10 @@ Prefab:
     - target: {fileID: 4229826250811212, guid: 7010ae9dd5d173344acdb176e3032eee, type: 2}
       propertyPath: m_LocalEulerAnglesHint.y
       value: -90
+      objectReference: {fileID: 0}
+    - target: {fileID: 1851088511670902, guid: 7010ae9dd5d173344acdb176e3032eee, type: 2}
+      propertyPath: m_Name
+      value: Portal_use
       objectReference: {fileID: 0}
     m_RemovedComponents: []
   m_ParentPrefab: {fileID: 100100000, guid: 7010ae9dd5d173344acdb176e3032eee, type: 2}

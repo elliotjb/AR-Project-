@@ -19,10 +19,12 @@ public class Objective : MonoBehaviour
 {
     public Material color_red;
     public Material color_blue;
-    public Material color_white;
+    public Material color_blue_dark;
+    public Material color_red_dark;
     float time = 0.0f;
     public float time_progresive = 1.0f;
     bool hit = false;
+    public ColorType light_color = ColorType.RED;
     public ColorType actualColor = ColorType.WHITE;
     public ColorType reset_color = ColorType.WHITE;
 
@@ -116,7 +118,14 @@ public class Objective : MonoBehaviour
         {
             case ColorType.WHITE:
                 {
-                    gameObject.GetComponent<Renderer>().material = color_white;
+                    if (light_color == ColorType.RED)
+                    {
+                        gameObject.GetComponent<Renderer>().material = color_red_dark;
+                    }
+                    else if (light_color == ColorType.BLUE)
+                    {
+                        gameObject.GetComponent<Renderer>().material = color_blue_dark;
+                    }
                     break;
                 }
             case ColorType.RED:
@@ -134,8 +143,12 @@ public class Objective : MonoBehaviour
 
     public void HitLaser(ColorType color)
     {
-        actualColor = color;
-        hit = true;
+        //Only light if the objective color is the same of the laser
+        if (light_color == color)
+        {
+            actualColor = color;
+            hit = true;
+        }
     }
 
 }
