@@ -7,6 +7,10 @@ public class ManagerObjective : MonoBehaviour
 {
     public List<StarController> stars;
     public List<GameObject> objectives;
+
+    public GameObject canvas;
+    private bool finished = false;
+
     public string next_level;
 
     public float time_to_complete = 2.0f;
@@ -15,13 +19,17 @@ public class ManagerObjective : MonoBehaviour
 	// Use this for initialization
 	void Start ()
     {
-		
-	}
+        canvas.SetActive(false);
+    }
 	
 	// Update is called once per frame
 	void Update ()
     {
         int num_activated = 0;
+        if(finished == false)
+        {
+
+        }
 		for(int i = 0; i < objectives.Count; i++)
         {
             if (objectives[i].GetComponent<Objective>().state == StateType.ACTIVATED)
@@ -29,11 +37,12 @@ public class ManagerObjective : MonoBehaviour
                 num_activated++;
             }
         }
-        if (num_activated == objectives.Count)
+        if (num_activated == objectives.Count && finished == false)
         {
             if(time >= time_to_complete)
             {
-                SceneManager.LoadScene(next_level);
+                canvas.SetActive(true);
+                finished = true;
             }
             else
             {
@@ -50,7 +59,7 @@ public class ManagerObjective : MonoBehaviour
     {
         for (int i = 0; i < stars.Count; i++) 
         {
-            if(stars[i].disabled == true)
+            if (stars[i].disabled == true && finished == false)
             {
                 stars[i].ActiveStar(true);
                 break;
@@ -62,12 +71,22 @@ public class ManagerObjective : MonoBehaviour
     {
         for (int i = stars.Count - 1; i >= 0; i--)
         {
-            if (stars[i].disabled == false)
+            if (stars[i].disabled == false && finished == false)
             {
                 stars[i].ActiveStar(false);
                 break;
             }
         }
+    }
+
+    public void GoNextLevel()
+    {
+        SceneManager.LoadScene(next_level);
+    }
+
+    public void ReturnMainMenu()
+    {
+        SceneManager.LoadScene("MainMenu");
     }
 
 }
