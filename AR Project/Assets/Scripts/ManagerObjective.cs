@@ -16,20 +16,19 @@ public class ManagerObjective : MonoBehaviour
     public float time_to_complete = 2.0f;
     float time = 0.0f;
 
+    AudioSource audio;
+
 	// Use this for initialization
 	void Start ()
     {
         canvas.SetActive(false);
+        audio = GetComponent<AudioSource>();
     }
 	
 	// Update is called once per frame
 	void Update ()
     {
         int num_activated = 0;
-        if(finished == false)
-        {
-
-        }
 		for(int i = 0; i < objectives.Count; i++)
         {
             if (objectives[i].GetComponent<Objective>().state == StateType.ACTIVATED)
@@ -57,24 +56,34 @@ public class ManagerObjective : MonoBehaviour
 
     public void ActiveStar()
     {
-        for (int i = 0; i < stars.Count; i++) 
+        if (finished == false)
         {
-            if (stars[i].disabled == true && finished == false)
+            if (audio != null)
             {
-                stars[i].ActiveStar(true);
-                break;
+                audio.Play();
+            }
+            for (int i = 0; i < stars.Count; i++)
+            {
+                if (stars[i].disabled == true && finished == false)
+                {
+                    stars[i].ActiveStar(true);
+                    break;
+                }
             }
         }
     }
 
     public void DeactiveStar()
     {
-        for (int i = stars.Count - 1; i >= 0; i--)
+        if (finished == false)
         {
-            if (stars[i].disabled == false && finished == false)
+            for (int i = stars.Count - 1; i >= 0; i--)
             {
-                stars[i].ActiveStar(false);
-                break;
+                if (stars[i].disabled == false && finished == false)
+                {
+                    stars[i].ActiveStar(false);
+                    break;
+                }
             }
         }
     }
