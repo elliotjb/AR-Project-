@@ -127,7 +127,7 @@ public class LastPosition
 public class Laserv3 : MonoBehaviour
 {
 	public LineRenderer laser_temp;
-	public int max_lines = 10;
+	public int max_lines = 20;
 	public int max_distance = 100;
 
     //Test
