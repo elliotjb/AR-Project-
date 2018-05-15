@@ -17,7 +17,7 @@ public enum StateType
 
 public class Objective : MonoBehaviour
 {
-    public ManagerObjective level_manager = null;
+    ManagerObjective level_manager = null;
     public Material color_red;
     public Material color_blue;
     public Material color_blue_dark;
@@ -47,6 +47,7 @@ public class Objective : MonoBehaviour
     void Start()
     {
         active = false;
+        level_manager = GameObject.Find("LevelManager").GetComponent<ManagerObjective>();
     }
 
 
