@@ -73,11 +73,11 @@ namespace Vuforia.EditorClasses
             androidSymbols = androidSymbols ?? "";
             if (!androidSymbols.Contains(VUFORIA_ANDROID_SETTINGS)) 
             {
-                if (PlayerSettings.Android.targetArchitectures != AndroidArchitecture.ARMv7)
-                {
-                    Debug.Log("Setting Android target device to ARMv7");
-                    PlayerSettings.Android.targetArchitectures = AndroidArchitecture.ARMv7;
-                }
+                //if (PlayerSettings.Android.targetArchitectures != AndroidArchitecture.ARMv7)
+                //{
+                //    Debug.Log("Setting Android target device to ARMv7");
+                //    PlayerSettings.Android.targetArchitectures = AndroidArchitecture.ARMv7;
+                //}
 
                 if (PlayerSettings.Android.androidTVCompatibility)
                 {

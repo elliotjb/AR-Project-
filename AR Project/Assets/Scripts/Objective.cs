@@ -47,7 +47,11 @@ public class Objective : MonoBehaviour
     void Start()
     {
         active = false;
-        level_manager = GameObject.Find("LevelManager").GetComponent<ManagerObjective>();
+        GameObject level = GameObject.Find("LevelManager");
+        if (level != null)
+        {
+            level_manager = level.GetComponent<ManagerObjective>();
+        }
     }
 
 

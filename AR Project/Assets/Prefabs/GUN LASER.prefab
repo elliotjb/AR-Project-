@@ -131,3 +131,4 @@ MonoBehaviour:
   delta_angle: 0
   red: {fileID: 2100000, guid: df221e7d997abd84d9649670709c7091, type: 2}
   blue: {fileID: 2100000, guid: 27d01979cb5efae4eba8b4261fd95044, type: 2}
+  particles: {fileID: 0}
