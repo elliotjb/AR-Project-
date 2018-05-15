@@ -1901,7 +1901,7 @@ MonoBehaviour:
   - {fileID: 1800914145}
   objectives:
   - {fileID: 933359254}
-  canvas: {fileID: 2102106993}
+  canvas: {fileID: 225482661}
   next_level: Level2
   time_to_complete: 2
 --- !u!4 &1698406526
