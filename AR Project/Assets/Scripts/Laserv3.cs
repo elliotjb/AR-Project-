@@ -36,6 +36,9 @@ public class LaserClass
     public ColorType color = ColorType.RED;
     public ParticleSystem particles_collision;
 
+    public Vector3 E_lastposition = Vector3.zero;
+    public Vector3 E_direction = Vector3.zero;
+
     public ElementType type_hit = ElementType.NONE;
 }
 
@@ -142,15 +145,15 @@ public class Laserv3 : MonoBehaviour
 
     public ParticleSystem particles;
 
-    Directional direction;
-    LastPosition lastposition;
+    //Directional direction;
+    //LastPosition lastposition;
 
 
     void Start ()
     {
 		lasers = new List<LaserClass> (10);
-        direction = new Directional();
-        lastposition = new LastPosition();
+        //direction = new Directional();
+        //lastposition = new LastPosition();
 
         for (int i = 0; i < 10; i++) 
 		{
@@ -173,8 +176,8 @@ public class Laserv3 : MonoBehaviour
 
 	void DoLaser()
 	{
-        lastposition.lastposition_normal = transform.position;
-        direction.direction_normal = transform.forward;
+        lasers[0].E_lastposition = transform.position;
+        lasers[0].E_direction = transform.forward;
         lasers[0].laser.positionCount = 1;
 		lasers[0].laser.SetPosition(0, transform.position);
 
@@ -192,51 +195,51 @@ public class Laserv3 : MonoBehaviour
 			while (hit)
 			{
 				RaycastHit ray_hit;
-				bool hit_do = Physics.Raycast(lastposition[lasers[i].direction], direction[lasers[i].direction], out ray_hit, max_distance);
+				bool hit_do = Physics.Raycast(lasers[i].E_lastposition, lasers[i].E_direction, out ray_hit, max_distance);
                 ElementType mode = SelectMode (ray_hit);
 
                 //MODIFY LASER DEPENDING ON THE COLLIDED OBJECT ----------------------------------------------------
 
 				if (mode == ElementType.MIRROR)
                 {
-                    Mirror(ref count_hits, ref div_hits, ray_hit, lastposition, direction, i);             
+                    Mirror(ref count_hits, ref div_hits, ray_hit, i);             
                 } 
 
 				else if (mode == ElementType.RECEIVER)
                 {
-                    Receiver(ref count_hits, ref div_hits, ray_hit, lastposition, direction, ref hit, i);
+                    Receiver(ref count_hits, ref div_hits, ray_hit, ref hit, i);
 				} 
 
 				else if(mode == ElementType.OBSTACLE)
                 {
-                    Obstacle(ref count_hits, ref div_hits, ray_hit, lastposition, direction, ref hit, i);
+                    Obstacle(ref count_hits, ref div_hits, ray_hit, ref hit, i);
 				}
 
 				else if(mode > ElementType.FIRST_COLOR && mode < ElementType.LAST_COLOR)
                 {
-                    ChangeColor(ref count_hits, ref div_hits, ray_hit, lastposition, direction, ref hit, mode, i);
+                    ChangeColor(ref count_hits, ref div_hits, ray_hit, ref hit, mode, i);
 				}
 
                 else if (mode == ElementType.PORTAL)
                 {
-                    Portal(ref count_hits, ref div_hits, ray_hit, lastposition, direction, ref hit, i);
+                    Portal(ref count_hits, ref div_hits, ray_hit, ref hit, i);
                 }
 
                 else if (mode == ElementType.PRISM)
                 {
                     if (i + 1 < lasers.Count && i + 2 < lasers.Count)
                     {
-                        Prism(ref count_hits, ref div_hits, ray_hit, lastposition, direction, ref hit, i);
+                        Prism(ref count_hits, ref div_hits, ray_hit, ref hit, i);
                     }
                     else
                     {
-                        Obstacle(ref count_hits, ref div_hits, ray_hit, lastposition, direction, ref hit, i);
+                        Obstacle(ref count_hits, ref div_hits, ray_hit, ref hit, i);
                     }
                 }
 
                 else if (mode == ElementType.OBJECTIVE)
                 {
-                    Objective(ref count_hits, ref div_hits, ray_hit, lastposition, direction, ref hit, i);
+                    Objective(ref count_hits, ref div_hits, ray_hit, ref hit, i);
                 }
                 // --------------------------------------------------------------------------------------------------------------
 
@@ -246,7 +249,7 @@ public class Laserv3 : MonoBehaviour
                     count_hits++;
                     div_hits++;
                     lasers[i].laser.positionCount = div_hits;
-					lasers[i].laser.SetPosition (div_hits - 1, lastposition[lasers[i].direction] + (direction[lasers[i].direction].normalized * max_distance));
+					lasers[i].laser.SetPosition (div_hits - 1, lasers[i].E_lastposition + (lasers[i].E_direction.normalized * max_distance));
 					hit = false;
 				}
 
@@ -307,8 +310,10 @@ public class Laserv3 : MonoBehaviour
             lasers[i].laser.positionCount = 0;
             lasers[i].direction = DirectionType.NORMAL;
             lasers[i].color = ColorType.RED;
+            lasers[i].E_lastposition = Vector3.zero;
+            lasers[i].E_direction = Vector3.zero;
 
-            if(lasers[i].type_hit != ElementType.OBSTACLE && lasers[i].type_hit != ElementType.OBJECTIVE)
+            if (lasers[i].type_hit != ElementType.OBSTACLE && lasers[i].type_hit != ElementType.OBJECTIVE)
             {
                 lasers[i].particles_collision.Stop();
             }
@@ -321,28 +326,28 @@ public class Laserv3 : MonoBehaviour
     //LASER MODIFIER FUNCTIONS -----------------
 
     //Reflect laser depending on the mirror rotation
-    void Mirror(ref int count_hits, ref int div_hits, RaycastHit ray_hit, LastPosition lastposition, Directional direction, int i)
+    void Mirror(ref int count_hits, ref int div_hits, RaycastHit ray_hit, int i)
     {
         count_hits++;
         div_hits += 3;
         lasers[i].laser.positionCount = div_hits;
-        lasers[i].laser.SetPosition(div_hits - 3, Vector3.MoveTowards(ray_hit.point, lastposition[lasers[i].direction], 0.01f));
+        lasers[i].laser.SetPosition(div_hits - 3, Vector3.MoveTowards(ray_hit.point, lasers[i].E_lastposition, 0.01f));
         lasers[i].laser.SetPosition(div_hits - 2, ray_hit.point);
         lasers[i].laser.SetPosition(div_hits - 1, ray_hit.point);
-        lastposition[lasers[i].direction] = ray_hit.point;
-        direction[lasers[i].direction] = Vector3.Reflect(direction[lasers[i].direction], ray_hit.normal);
+        lasers[i].E_lastposition = ray_hit.point;
+        lasers[i].E_direction = Vector3.Reflect(lasers[i].E_direction, ray_hit.normal);
 
         lasers[i].type_hit = ElementType.MIRROR;
     }
 
     //Receive laser to Do Something...
-    void Receiver(ref int count_hits, ref int div_hits, RaycastHit ray_hit, LastPosition lastposition, Directional direction, ref bool hit, int i)
+    void Receiver(ref int count_hits, ref int div_hits, RaycastHit ray_hit, ref bool hit, int i)
     {
         count_hits++;
         div_hits++;
         lasers[i].laser.positionCount = div_hits;
-        float distance = Vector3.Distance(lastposition[lasers[i].direction], ray_hit.point);
-        lasers[i].laser.SetPosition(div_hits - 1, lastposition[lasers[i].direction] + (direction[lasers[i].direction].normalized * distance));
+        float distance = Vector3.Distance(lasers[i].E_lastposition, ray_hit.point);
+        lasers[i].laser.SetPosition(div_hits - 1, lasers[i].E_lastposition + (lasers[i].E_direction.normalized * distance));
 
         // Do Something...
 
@@ -351,19 +356,19 @@ public class Laserv3 : MonoBehaviour
     }
 
     //Stop the laser line at the hit point
-    void Obstacle(ref int count_hits, ref int div_hits, RaycastHit ray_hit, LastPosition lastposition, Directional direction, ref bool hit, int i)
+    void Obstacle(ref int count_hits, ref int div_hits, RaycastHit ray_hit, ref bool hit, int i)
     {
         count_hits++;
         div_hits++;
         lasers[i].laser.positionCount = div_hits;
-        float distance = Vector3.Distance(lastposition[lasers[i].direction], ray_hit.point);
-        lasers[i].laser.SetPosition(div_hits - 1, lastposition[lasers[i].direction] + (direction[lasers[i].direction].normalized * distance));
+        float distance = Vector3.Distance(lasers[i].E_lastposition, ray_hit.point);
+        lasers[i].laser.SetPosition(div_hits - 1, lasers[i].E_lastposition + (lasers[i].E_direction.normalized * distance));
 
         if (!lasers[i].particles_collision.isEmitting)
         {
             lasers[i].particles_collision.Play();
         }
-        lasers[i].particles_collision.transform.position = lastposition[lasers[i].direction] + (direction[lasers[i].direction].normalized * distance);
+        lasers[i].particles_collision.transform.position = lasers[i].E_lastposition + (lasers[i].E_direction.normalized * distance);
         lasers[i].particles_collision.transform.rotation = Quaternion.LookRotation(ray_hit.normal);
 
         lasers[i].type_hit = ElementType.OBSTACLE;
@@ -371,13 +376,13 @@ public class Laserv3 : MonoBehaviour
     }
 
     //Change color of the laser: BLUE
-    void ChangeColor(ref int count_hits, ref int div_hits, RaycastHit ray_hit, LastPosition lastposition, Directional direction, ref bool hit, ElementType mode, int i)
+    void ChangeColor(ref int count_hits, ref int div_hits, RaycastHit ray_hit, ref bool hit, ElementType mode, int i)
     {
         count_hits++;
         div_hits++;
         lasers[i].laser.positionCount = div_hits;
-        float distance = Vector3.Distance(lastposition[lasers[i].direction], ray_hit.point);
-        lasers[i].laser.SetPosition(div_hits - 1, lastposition[lasers[i].direction] + (direction[lasers[i].direction].normalized * distance));
+        float distance = Vector3.Distance(lasers[i].E_lastposition, ray_hit.point);
+        lasers[i].laser.SetPosition(div_hits - 1, lasers[i].E_lastposition + (lasers[i].E_direction.normalized * distance));
 
         // Do Something...
 
@@ -387,8 +392,9 @@ public class Laserv3 : MonoBehaviour
         lasers[next_laser].direction = lasers[i].direction;
         lasers[next_laser].active = true;
         lasers[next_laser].laser.positionCount = 1;
-        lastposition[lasers[next_laser].direction] = ray_hit.point + (direction[lasers[i].direction].normalized * 0.4261f); //0.4261 = Element width
-        lasers[next_laser].laser.SetPosition(0, lastposition[lasers[next_laser].direction]);
+        lasers[next_laser].E_lastposition = ray_hit.point + (lasers[i].E_direction.normalized * 0.4261f); //0.4261 = Element width
+        lasers[next_laser].laser.SetPosition(0, lasers[next_laser].E_lastposition);
+        lasers[next_laser].E_direction = lasers[i].E_direction;
 
         hit = false;
     }
@@ -409,7 +415,7 @@ public class Laserv3 : MonoBehaviour
     }
 
     //Set the laser at the point of the linked portal
-    void Portal(ref int count_hits, ref int div_hits, RaycastHit ray_hit, LastPosition lastposition, Directional direction, ref bool hit, int i)
+    void Portal(ref int count_hits, ref int div_hits, RaycastHit ray_hit, ref bool hit, int i)
     {
         Portal portal = ray_hit.transform.GetComponent<Portal>();
 
@@ -417,8 +423,8 @@ public class Laserv3 : MonoBehaviour
         div_hits++;
 
         lasers[i].laser.positionCount = div_hits;
-        float distance = Vector3.Distance(lastposition[lasers[i].direction], ray_hit.point);
-        lasers[i].laser.SetPosition(div_hits - 1, lastposition[lasers[i].direction] + (direction[lasers[i].direction].normalized * distance));
+        float distance = Vector3.Distance(lasers[i].E_lastposition, ray_hit.point);
+        lasers[i].laser.SetPosition(div_hits - 1, lasers[i].E_lastposition + (lasers[i].E_direction.normalized * distance));
 
         int next_laser = GetAvailableLaser();
         lasers[next_laser].active = true;
@@ -428,25 +434,26 @@ public class Laserv3 : MonoBehaviour
         Vector3 local_hit_point = Vector3.zero;
         local_hit_point = ray_hit.transform.InverseTransformPoint(ray_hit.point);
         Vector3 other_hit_point = portal.linked_portal.transform.TransformPoint(local_hit_point);
-        lastposition[lasers[next_laser].direction] = other_hit_point - portal.GetLinkedDirection().normalized * 0.2f;
+        lasers[next_laser].E_lastposition = other_hit_point - portal.GetLinkedDirection().normalized * 0.2f;
 
-        lasers[next_laser].laser.SetPosition(0, lastposition[lasers[next_laser].direction]);
-        angle = Vector3.Angle(direction[lasers[i].direction], portal.transform.forward);
-        Vector3 cross = Vector3.Cross(direction[lasers[i].direction], portal.transform.forward);
+        lasers[next_laser].laser.SetPosition(0, lasers[next_laser].E_lastposition);
+        angle = Vector3.Angle(lasers[i].E_direction, portal.transform.forward);
+        Vector3 cross = Vector3.Cross(lasers[i].E_direction, portal.transform.forward);
         if (cross.y < 0) 
         {
             angle = -angle;
         }
-        direction[lasers[i].direction] = Quaternion.AngleAxis(-angle, portal.transform.up) * -portal.GetLinkedDirection();
+        lasers[next_laser].E_direction = Quaternion.AngleAxis(-angle, portal.transform.up) * -portal.GetLinkedDirection();
 
         //Set the correct color
-        lasers[next_laser].laser.material = lasers[i].laser.material;        
+        lasers[next_laser].laser.material = lasers[i].laser.material;
+        lasers[next_laser].color = lasers[i].color;
 
         hit = false;
     }
 
 
-    void Prism(ref int count_hits, ref int div_hits, RaycastHit ray_hit, LastPosition lastposition, Directional direction, ref bool hit, int i)
+    void Prism(ref int count_hits, ref int div_hits, RaycastHit ray_hit, ref bool hit, int i)
     {
         Prism prism = ray_hit.transform.GetComponent<Prism>();
 
@@ -454,8 +461,8 @@ public class Laserv3 : MonoBehaviour
         div_hits++;
 
         lasers[i].laser.positionCount = div_hits;
-        float distance = Vector3.Distance(lastposition[lasers[i].direction], ray_hit.point);
-        lasers[i].laser.SetPosition(div_hits - 1, lastposition[lasers[i].direction] + (direction[lasers[i].direction].normalized * distance));
+        float distance = Vector3.Distance(lasers[i].E_lastposition, ray_hit.point);
+        lasers[i].laser.SetPosition(div_hits - 1, lasers[i].E_lastposition + (lasers[i].E_direction.normalized * distance));
 
 
 
@@ -464,6 +471,7 @@ public class Laserv3 : MonoBehaviour
         //Set the correct color
         lasers[next_laser].laser.material = lasers[i].laser.material;
         lasers[next_laser].direction = DirectionType.LEFT;
+        lasers[next_laser].color = lasers[i].color;
 
         //LASER LEFT
         lasers[next_laser].active = true;
@@ -472,9 +480,9 @@ public class Laserv3 : MonoBehaviour
         Vector3 local_hit_point = Vector3.zero;
         local_hit_point = ray_hit.transform.InverseTransformPoint(ray_hit.point);
         Vector3 other_hit_point = prism.other_face_1.transform.TransformPoint(local_hit_point);
-        lastposition[lasers[next_laser].direction] = other_hit_point + prism.GetFace1Direction().normalized * 0.12f;
-        lasers[next_laser].laser.SetPosition(0, lastposition[lasers[next_laser].direction]);
-        direction[lasers[next_laser].direction] = prism.GetFace1Direction();
+        lasers[next_laser].E_lastposition = other_hit_point + prism.GetFace1Direction().normalized * 0.12f;
+        lasers[next_laser].laser.SetPosition(0, lasers[next_laser].E_lastposition);
+        lasers[next_laser].E_direction = prism.GetFace1Direction();
 
         ////LASER RIGHT
         next_laser = GetAvailableLaser();
@@ -482,15 +490,16 @@ public class Laserv3 : MonoBehaviour
         //Set the correct color
         lasers[next_laser].laser.material = lasers[i].laser.material;
         lasers[next_laser].direction = DirectionType.RIGHT;
+        lasers[next_laser].color = lasers[i].color;
 
         lasers[next_laser].active = true;
         lasers[next_laser].laser.positionCount = 1;
         local_hit_point = Vector3.zero;
         local_hit_point = ray_hit.transform.InverseTransformPoint(ray_hit.point);
         other_hit_point = prism.other_face_2.transform.TransformPoint(local_hit_point);
-        lastposition[lasers[next_laser].direction] = other_hit_point + prism.GetFace2Direction().normalized * 0.12f;
-        lasers[next_laser].laser.SetPosition(0, lastposition[lasers[next_laser].direction]);
-        direction[lasers[next_laser].direction] = prism.GetFace2Direction();
+        lasers[next_laser].E_lastposition = other_hit_point + prism.GetFace2Direction().normalized * 0.12f;
+        lasers[next_laser].laser.SetPosition(0, lasers[next_laser].E_lastposition);
+        lasers[next_laser].E_direction = prism.GetFace2Direction();
 
         hit = false;
     }
@@ -508,13 +517,13 @@ public class Laserv3 : MonoBehaviour
         return 0;
     }
 
-    void Objective(ref int count_hits, ref int div_hits, RaycastHit ray_hit, LastPosition lastposition, Directional direction, ref bool hit, int i)
+    void Objective(ref int count_hits, ref int div_hits, RaycastHit ray_hit, ref bool hit, int i)
     {
         count_hits++;
         div_hits++;
         lasers[i].laser.positionCount = div_hits;
-        float distance = Vector3.Distance(lastposition[lasers[i].direction], ray_hit.point);
-        lasers[i].laser.SetPosition(div_hits - 1, lastposition[lasers[i].direction] + (direction[lasers[i].direction].normalized * distance));
+        float distance = Vector3.Distance(lasers[i].E_lastposition, ray_hit.point);
+        lasers[i].laser.SetPosition(div_hits - 1, lasers[i].E_lastposition + (lasers[i].E_direction.normalized * distance));
         hit = false;
         ray_hit.collider.gameObject.GetComponent<Objective>().HitLaser(lasers[i].color);
 
@@ -522,7 +531,7 @@ public class Laserv3 : MonoBehaviour
         {
             lasers[i].particles_collision.Play();
         }
-        lasers[i].particles_collision.transform.position = lastposition[lasers[i].direction] + (direction[lasers[i].direction].normalized * distance);
+        lasers[i].particles_collision.transform.position = lasers[i].E_lastposition + (lasers[i].E_direction.normalized * distance);
         lasers[i].particles_collision.transform.rotation = Quaternion.LookRotation(ray_hit.normal);
         lasers[i].type_hit = ElementType.OBJECTIVE;
     }
