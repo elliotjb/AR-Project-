@@ -60,7 +60,7 @@ public class Objective : MonoBehaviour
     {
         if (mode == ObjectiveMode.PROGRESIVE)
         {
-            if(hit)
+            if(hit && state == StateType.DESACTIVATED)
             {
                 if (time > time_progresive && state == StateType.DESACTIVATED)
                 {
@@ -74,7 +74,7 @@ public class Objective : MonoBehaviour
                     time += Time.deltaTime;
                 }
             }
-            else
+            else if (hit == false && state == StateType.ACTIVATED)
             {
                 time = 0.0f;
                 ChangeColor(reset_color);
@@ -102,7 +102,7 @@ public class Objective : MonoBehaviour
         }
         else if (mode == ObjectiveMode.SPECIAL)
         {
-            if (hit)
+            if (hit && state == StateType.DESACTIVATED)
             {
                 if (time > time_progresive && state == StateType.DESACTIVATED)
                 {
@@ -116,7 +116,7 @@ public class Objective : MonoBehaviour
                     time += Time.deltaTime;
                 }
             }
-            else
+            else if (hit == false && state == StateType.ACTIVATED)
             {
                 time -= Time.deltaTime;
                 if (time <= 0.0f)
