@@ -17,6 +17,7 @@ public enum StateType
 
 public class Objective : MonoBehaviour
 {
+    public ManagerObjective level_manager = null;
     public Material color_red;
     public Material color_blue;
     public Material color_blue_dark;
@@ -29,6 +30,8 @@ public class Objective : MonoBehaviour
     public ColorType reset_color = ColorType.WHITE;
 
     public StateType state = StateType.DESACTIVATED;
+
+    bool active = false;
 
     public enum ObjectiveMode
     {
@@ -43,7 +46,7 @@ public class Objective : MonoBehaviour
     // Use this for initialization
     void Start()
     {
-
+        active = false;
     }
 
 
@@ -54,10 +57,12 @@ public class Objective : MonoBehaviour
         {
             if(hit)
             {
-                if (time > time_progresive)
+                if (time > time_progresive && state == StateType.DESACTIVATED)
                 {
                     ChangeColor(actualColor);
                     state = StateType.ACTIVATED;
+                    if(level_manager != null)
+                        level_manager.ActiveStar();
                 }
                 else
                 {
@@ -69,29 +74,37 @@ public class Objective : MonoBehaviour
                 time = 0.0f;
                 ChangeColor(reset_color);
                 state = StateType.DESACTIVATED;
+                if (level_manager != null)
+                    level_manager.DeactiveStar();
             }
         }
         else if (mode == ObjectiveMode.DIRECT)
         {
-            if (hit)
+            if (hit && state == StateType.DESACTIVATED)
             {
                 ChangeColor(actualColor);
                 state = StateType.ACTIVATED;
+                if (level_manager != null)
+                    level_manager.ActiveStar();
             }
-            else
+            else if(hit == false && state == StateType.ACTIVATED)
             {
                 ChangeColor(reset_color);
                 state = StateType.DESACTIVATED;
+                if (level_manager != null)
+                    level_manager.DeactiveStar();
             }
         }
         else if (mode == ObjectiveMode.SPECIAL)
         {
             if (hit)
             {
-                if (time > time_progresive)
+                if (time > time_progresive && state == StateType.DESACTIVATED)
                 {
                     ChangeColor(actualColor);
                     state = StateType.ACTIVATED;
+                    if (level_manager != null)
+                        level_manager.ActiveStar();
                 }
                 else
                 {
@@ -106,6 +119,8 @@ public class Objective : MonoBehaviour
                     time = 0.0f;
                     ChangeColor(reset_color);
                     state = StateType.DESACTIVATED;
+                    if (level_manager != null)
+                        level_manager.DeactiveStar();
                 }
             }
         }
