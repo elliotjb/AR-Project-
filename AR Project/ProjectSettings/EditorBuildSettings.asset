@@ -11,7 +11,7 @@ EditorBuildSettings:
   - enabled: 0
     path: Assets/Scenes/AR Project.unity
     guid: d5188dd91309a7642b689bb559145e35
-  - enabled: 0
+  - enabled: 1
     path: Assets/Scenes/SelectLevel.unity
     guid: 158a4380b40c0734cad5ce0e2d3a57d5
   - enabled: 1
@@ -36,9 +36,8 @@ EditorBuildSettings:
     path: Assets/Scenes/Levels/Level7.unity
     guid: 30330a84c7386a849b50ea8de9452ee4
   - enabled: 0
-    path: Assets/Scenes/Levels/Level8.unity
+    path: 
     guid: 24b4b96309fd0704aa53979bf8381c5c
   - enabled: 0
-    path: Assets/Scenes/Levels/Level9.unity
+    path: 
     guid: ba161b832ce2815428d53b4359e5807a
-  m_configObjects: {}
