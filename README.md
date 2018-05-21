@@ -1,6 +1,6 @@
 # AR Project 
 
-This game demo is created by Jordi Oña & Elliot Jimenez, this is our first AR game. Made with Unity and Vuforia.
+This game demo is created by Jordi Oña & Elliot Jimenez, this is our first AR game for Android. Made with Unity and Vuforia.
 
 [![https://gyazo.com/bdc771dad555078474d48d8638e48acf](https://i.gyazo.com/bdc771dad555078474d48d8638e48acf.jpg)](https://gyazo.com/bdc771dad555078474d48d8638e48acf)
 
